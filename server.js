@@ -13,6 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files (HTML, CSS, JS) from the current directory
 app.use(express.static(path.join(__dirname)));
 
+// Request logging middleware - moved to execute for all requests before routes
+app.use((req, res, next) => {
+    console.log('Request received for:', req.originalUrl);
+    next(); // Important to call next() to pass control to the next middleware/route
+});
+
 // --- API Endpoints ---
 
 // Basic setup for multer to handle file uploads (the PDF blob)
