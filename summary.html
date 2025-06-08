@@ -199,7 +199,7 @@
 
         async function fetchResultsDescriptions() {
             try {
-                const response = await fetch('results-descriptions.json');
+                const response = await fetch('Data/results-descriptions.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

@@ -16,11 +16,11 @@
     --complicated-stacey-color: #FFB854;
     --complex-stacey-color: #88B2CB;
     --chaotic-stacey-color: #A409B2;
-    --score-color: #CB3636;      /* Stacey score point, Cynefin highlight */
+    --score-color: #B75C63;      /* Stacey score point, Cynefin highlight */
 
     /* Cynefin Framework Colors */
     --complex-cynefin-color: #53ABBF;
-    --complicated-cynefin-color: #31608E;
+    --complicated-cynefin-color: #002A53;
     --chaotic-cynefin-color: #0F7A66;
     --clear-cynefin-color: #0E5A30;
     --disorder-cynefin-color: #8A5F00;
@@ -299,8 +299,7 @@ button:active {
 .complicated-color { background-color: var(--complicated-stacey-color); }
 .complex-color { background-color: var(--complex-stacey-color); }
 .chaotic-color { background-color: var(--chaotic-stacey-color); }
-/* .score-color is already in common, but if stacey's was different, it would be here */
-/* e.g., .stacey-score-color { background-color: #CB3636; border-radius: 50%; } */
+.score-color { background-color: var(--score-color); } /* Ensures legend item uses the variable */
 
 .stacey-chart-container { /* Specific for Stacey chart */
     height: 450px; /* Default height for larger screens */
