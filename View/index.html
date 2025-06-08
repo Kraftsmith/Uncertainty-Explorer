@@ -18,12 +18,60 @@
                 <li><strong>Cynefin Framework Assessment:</strong> To determine the appropriate decision-making approach based on your context.</li>
                 <li><strong>Summary:</strong> To view a consolidated report of your assessments.</li>
             </ul>
+
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--medium-gray);">
+                <div>
+                    <label for="project-name" style="display: block; margin-bottom: 8px; font-weight: 500;">Enter the project name you would like to assess:</label>
+                    <input type="text" id="project-name" name="project-name" placeholder="E.g., Phoenix Project" style="width: 100%; max-width: 300px; padding: 8px; margin-bottom: 16px; border: 1px solid var(--medium-gray); border-radius: 4px;">
+                </div>
+                <label for="user-email" style="display: block; margin-bottom: 8px; font-weight: 500;">Enter your email to associate with this assessment:</label>
+                <input type="email" id="user-email" name="user-email" placeholder="your.email@example.com" style="width: 100%; max-width: 300px; padding: 8px; margin-bottom: 16px; border: 1px solid var(--medium-gray); border-radius: 4px;">
+                <button id="start-assessment-btn" onclick="startAssessment()">Start Assessment</button>
+            </div>
         </div>
     </div>
 
     <script src="../JavaScript/navigation-component.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => loadNavigationComponent('left-nav-placeholder'));
+
+        function startAssessment() {
+            const email = document.getElementById('user-email').value;
+            const projectName = document.getElementById('project-name').value;
+
+            if (projectName && email) {
+                // Register/login user with the server to save to DB
+                fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, projectName }) // Include projectName if your API handles it
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.user && data.user.id) {
+                        // Save user info to localStorage
+                        localStorage.setItem('userEmailForAssessment', email);
+                        localStorage.setItem('projectNameForAssessment', projectName);
+                        localStorage.setItem('userId', data.user.id); // Save the ID from the DB
+                        // Navigate to the first assessment
+                        window.location.href = 'stacey.html'; 
+                    } else {
+                        throw new Error(data.error || 'Failed to register user or get user ID.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error starting assessment:', error);
+                    alert('There was a problem initiating your assessment. This could be a temporary server issue. Please try again in a few moments. If the problem persists, please contact support.');
+                });
+            } else {
+                let alertMessage = "Please enter the following to start the assessment:\n";
+                if (!projectName) alertMessage += "- Project Name\n";
+                if (!email) alertMessage += "- Email Address\n";
+                alert(alertMessage.trim());
+            }
+        }
     </script>
 </body>
 </html>
