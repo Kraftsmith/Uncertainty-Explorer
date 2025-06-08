@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Approach Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+        .filter-container label {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Delivery Approach Builder</h2>
+
+    <div class="filter-container">
+        <label><input type="checkbox" id="predictive" checked> Predictive</label>
+        <label><input type="checkbox" id="hybrid" checked> Hybrid</label>
+        <label><input type="checkbox" id="agile" checked> Agile</label>
+    </div>
+
+    <table id="approach-table">
+        <thead>
+            <tr>
+                <th>Deliver Approach</th>
+                <th>Area</th>
+                <th>Meaning and Description</th>
+                <th>Artifact Template</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        const data = [
+            {
+                "Deliver approach": "Project plan",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "Comprehensive project plan serves as the foundational blueprint that guides the entire project from start to finish. In a predictive setting, this plan is meticulously detailed and structured at the outset, with clearly defined phases, timelines, and deliverables. The goal is to minimize uncertainty by anticipating every aspect of the project, thereby allowing for strict adherence to the schedule and budget. In a hybrid setting, the project plan still serves as the central roadmap, but it incorporates elements of flexibility to adapt to changing conditions or new insights gained during execution. Hybrid approaches allow for iterative cycles or agile sprints within certain phases, enabling teams to respond to evolving requirements without losing sight of the project's ultimate objectives.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Product roadmap",
+                "Area": "Hybrid, agile",
+                "Meaning and description": "Product Roadmap in Hybrid and Agile Settings: \"One Vision, Adaptable Paths\" In both hybrid and agile project management approaches, the product roadmap is a strategic tool that outlines the high-level vision and direction of the product. It serves as a living document that guides the development process while allowing for adaptability in response to changing customer needs and market conditions. In an agile setting, the roadmap is deliberately flexible, focusing on milestones and key deliverables rather than detailed task breakdowns. This approach prioritizes features and functionalities based on customer feedback and market demand, allowing the team to pivot quickly as new information emerges. The roadmap is continually refined, embracing changes as part of the agile philosophy. In a hybrid setting, the product roadmap still provides a clear vision and long-term direction, but it blends the adaptability of agile with the structure of more predictive approach. The roadmap emphasizes milestones and key deliverables, enabling the team to deliver incremental value while keeping the broader objectives in sight. This avoids the rigidity of detailed task breakdowns, ensuring that the plan can adapt to evolving requirements without losing focus on the overall vision.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Resource Management",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "Practices for efficient utilization and allocation of resources.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Sprint Planning",
+                "Area": "Agile",
+                "Meaning and description": "Sprint planning is an event in the Scrum framework where the team determines the product backlog items they will work on during the sprint and discusses their initial plan for completing those product backlog items.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Daily Standup",
+                "Area": "Agile",
+                "Meaning and description": "The daily standup is a short, time-boxed meeting for the development team to synchronize activities and create a plan for the next 24 hours.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Retrospective",
+                "Area": "Agile",
+                "Meaning and description": "A retrospective is a meeting held at the end of an iteration in Agile development. During the retrospective, the team reflects on what happened in the iteration and identifies actions for improvement going forward.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Gantt Chart",
+                "Area": "Predictive",
+                "Meaning and description": "A Gantt chart is a type of bar chart that illustrates a project schedule. It is used in project management to show the start and finish dates of the elements of a project.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Kanban Board",
+                "Area": "Agile",
+                "Meaning and description": "A Kanban board is a tool for workflow visualization, designed to help bring clarity to your work process and enhance efficiency by visualizing the flow of work.",
+                "Artifact Template": ""
+            }
+            {
+                "Deliver approach": "Risk Management",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "Risk management involves identifying, assessing, and prioritizing risks followed by coordinated efforts to minimize, monitor, and control the probability or impact of unfortunate events.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Backlog Grooming",
+                "Area": "Agile",
+                "Meaning and description": "Backlog grooming is the process of reviewing and prioritizing the backlog to ensure that the team is working on the most valuable items.",
+                "Artifact Template": ""
+            }
+        ];
+
+        function renderTable(filteredData) {
+            const tbody = document.querySelector("#approach-table tbody");
+            tbody.innerHTML = ""; // Clear existing rows
+
+            filteredData.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row["Deliver approach"]}</td>
+                    <td>${row["Area"]}</td>
+                    <td>${row["Meaning and description"]}</td>
+                    <td>${row["Artifact Template"]}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterData() {
+            const predictiveChecked = document.getElementById("predictive").checked;
+            const hybridChecked = document.getElementById("hybrid").checked;
+            const urlParams = new URLSearchParams(window.location.search);
+            const approach = urlParams.get('approach');
+            const agileCheckbox = document.getElementById("agile");
+
+            if (approach === 'Agile') {
+                agileCheckbox.checked = true;
+            }
+
+            const agileChecked = agileCheckbox.checked;
+
+            const filteredData = data.filter(row => {
+                const areas = row["Area"].toLowerCase().split(", ");
+                return (predictiveChecked && areas.includes("predictive")) ||
+                       (hybridChecked && areas.includes("hybrid")) ||
+                       (agileChecked && areas.includes("agile"));
+            });
+
+            renderTable(filteredData);
+        }
+
+        document.getElementById("predictive").addEventListener("change", filterData);
+        document.getElementById("hybrid").addEventListener("change", filterData);
+        document.getElementById("agile").addEventListener("change", filterData);
+
+        // Initial render
+        filterData();
+    </script>
+
+</body>
+</html>

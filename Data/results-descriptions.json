@@ -1,0 +1,199 @@
+{
+    "cynefin": {
+        "complex": {
+            "name": "COMPLEX",
+            "subtitle": "Unknown Unknowns",
+            "approach": "PROBE → SENSE → RESPOND",
+            "constraintCoupling": "Enabling Constrained / Loosely Coupled",
+            "practiceType": "EMERGENT PRACTICE",
+            "characteristics": [
+                "No clear right answers, emergent patterns",
+                "Unpredictable, requires experimentation",
+                "Solutions emerge over time"
+            ],
+            "steps": [
+                "Probe: Experiment with small, safe-to-fail tests.",
+                "Sense: Observe outcomes and detect patterns.",
+                "Respond: Amplify what works, adjust as needed."
+            ]
+        },
+        "complicated": {
+            "name": "COMPLICATED",
+            "subtitle": "Known Unknowns",
+            "approach": "SENSE → ANALYSE → RESPOND",
+            "constraintCoupling": "Governing Constrained / Tightly Coupled",
+            "practiceType": "GOOD PRACTICE",
+            "characteristics": [
+                "Multiple right answers possible",
+                "Requires expertise and analysis",
+                "Good practices (not rigid best practices)"
+            ],
+            "steps": [
+                "Sense: Investigate the problem with experts.",
+                "Analyse: Evaluate options (e.g., cost-benefit, feasibility).",
+                "Respond: Apply expert judgment to choose the best solution."
+            ]
+        },
+        "chaotic": {
+            "name": "CHAOTIC",
+            "subtitle": "Cause and Effect Unclear",
+            "approach": "ACT → SENSE → RESPOND",
+            "constraintCoupling": "Tightly Constrained / No Degrees of Freedom",
+            "practiceType": "NOVEL PRACTICE",
+            "characteristics": [
+                "High turbulence, no clear cause-and-effect",
+                "Immediate action required to stabilize",
+                "Novel practices needed"
+            ],
+            "steps": [
+                "Act: Take decisive action to regain control.",
+                "Sense: Look for patterns as the situation stabilizes.",
+                "Respond: Transition to a more structured domain (Complex/Complicated)."
+            ]
+        },
+        "clear": {
+            "name": "CLEAR",
+            "subtitle": "Known Knowns",
+            "approach": "SENSE → CATEGORISE → RESPOND",
+            "constraintCoupling": "Tightly Constrained / No Degrees of Freedom",
+            "practiceType": "BEST PRACTICE",
+            "characteristics": [
+                "Clear cause-and-effect relationships",
+                "Best practices are known and proven",
+                "Predictable, repeatable processes"
+            ],
+            "steps": [
+                "Sense: Gather data to confirm the situation fits known patterns.",
+                "Categorise: Apply established best practices.",
+                "Respond: Execute standard solutions efficiently."
+            ]
+        },
+        "disorder": {
+            "name": "DISORDER",
+            "subtitle": "Uncertainty about how to proceed",
+            "approach": "Break down, gather more data, avoid premature framing.",
+            "constraintCoupling": "N/A",
+            "practiceType": "N/A",
+            "characteristics": [
+                "Unclear which domain applies",
+                "Uncertainty about how to proceed"
+            ],
+            "steps": [
+                "Break down the problem into smaller parts and assign to appropriate domains.",
+                "Gather more data to clarify the context.",
+                "Avoid forcing a framework prematurely."
+            ]
+        }
+    },
+    "combined": {
+        "complicated_complicated": {
+            "title": "Cynefin: Complicated & Stacey: Complicated",
+            "characteristics": [
+                "This domain is characterized by \"Known Unknowns.\"",
+                "The correct solutions are discoverable but require specialized knowledge and analysis.",
+                "Operates under \"governing constraints\" and is often \"tightly coupled,\" meaning there are rules and established ways of working that guide the analysis and response.",
+                "Uncertainties are \"known unknowns\" or moderate, making it possible and beneficial to invest in more detailed planning and analysis."
+            ],
+            "approach": "Leverage Expertise. Follow the Sense - Analyse - Respond cycle. Apply Good Practices.",
+            "steps": [
+                "Engage experts to investigate and understand the problem.",
+                "Sense: Gather data and investigate the problem with the help of experts.",
+                "Analyse: Evaluate various options and potential solutions (e.g., cost-benefit, feasibility, different approaches).",
+                "Respond: Apply expert judgment to choose and implement the most suitable solution.",
+                "Apply Good Practices: Rely on proven methods and solutions successful in similar complicated scenarios, allowing adaptation based on expert advice rather than rigidly applying \"best practices.\"",
+                "Invest in detailed planning and analysis.",
+                "Risk Management: Identify specific areas of uncertainty (in product features or technical implementation) and develop strategies to manage these risks.",
+                "Structured Project Management: Traditional or more structured approaches can be effective as experts can define tasks and solutions.",
+                "Clear Definitions: Work towards clarifying requirements and technical solutions through expert consultation and analysis.",
+                "Maintain Clear Processes and Communication: Ensure well-defined processes for decision-making and clear communication channels."
+            ],
+            "deliveryPractices": [
+                "Product roadmap", "Project phases", "Strategic management through goals",
+                "Increment is not strictly aligned to iterations, yet releases are regular.",
+                "Iterations, where increment is not required every iteration", "Iteration(Sprint) planning",
+                "Product Backlog Refinement with focus adding details", "Daily Standup",
+                "Iteration(Sprint) retrospective on regular basis but might be not every iteration, focus on lessons learned and analysis",
+                "Iteration demo", "Multiple iteration goals", "Stabilization iteration",
+                "Quality control(testing) of all the WIs of previous iterations",
+                "Backlog - source of all work", "Burn-down chart",
+                "Estimation of each piece and then sum together"
+            ]
+        },
+        "complex_complex": {
+            "title": "Cynefin: Complex & Stacey: Complex",
+            "characteristics": [
+                "Embrace Experimentation and Emergence.",
+                "This domain is characterized by \"Unknown Unknowns\" in the Cynefin Framework and high levels of both business and technical uncertainty in the Stacey Matrix.",
+                "Clear-cut solutions are not readily available, and patterns emerge through experimentation."
+            ],
+            "approach": "Probe - Sense - Respond.",
+            "steps": [
+                "Probe: Conduct small, safe-to-fail experiments to explore the landscape and test hypotheses. This involves trying different approaches and observing the results.",
+                "Sense: Observe the outcomes of the experiments to detect patterns and insights. Focus on what emerges from the interactions and feedback.",
+                "Respond: Amplify what works, dampen what doesn't, and adapt the strategy based on the emergent patterns. Be prepared to adjust the course as new information comes to light.",
+                "Foster Emergent Practices: Rigidly applying \"best practices\" is ineffective. Focus on creating an environment that encourages innovation, learning, and adaptation.",
+                "Enabling Constraints: Operate under \"enabling constraints\" and \"loosely coupled\" systems. Provide broad guidelines but allow for flexibility and autonomy.",
+                "Iterative Exploration: Favor iterative development, short feedback loops, and frequent adjustments. Increment delivery is driven by knowledge from iteration outcomes.",
+                "Continuous Learning: Prioritize continuous learning and knowledge sharing. Encourage experimentation and retrospective analysis.",
+                "Adaptive Planning: Avoid detailed upfront planning. Use rolling wave planning. Plan to discover solutions, not just execute known ones.",
+                "Collaboration and Feedback: Foster strong collaboration within the team and with stakeholders. Value and use feedback to refine the approach.",
+                "Visualization and Transparency: Make processes and progress highly visible (e.g., Kanban boards, information radiators).",
+                "Experimentation Mindset: Cultivate a mindset of experimentation and learning from failure. Encourage testing new ideas.",
+                "Embrace Uncertainty: Acknowledge and navigate ambiguity rather than forcing premature clarity."
+            ],
+            "deliveryPractices": [
+                "Product roadmap", "Strategic management through goals", "One or multiple increments each iteration",
+                "Iterations (Sprints) with increment included", "Iteration(Sprint) planning",
+                "Product Backlog Refinement with focus on new ideas and hypothesis",
+                "Product Backlog Refinement with focus adding details", "Daily Scrum",
+                "Iteration(Sprint) retrospective every sprint", "Iteration(Sprint) review",
+                "Single sprint goal", "Iteration goal",
+                "Quality control(testing) of all the WI within the iteration",
+                "Backlog - source of all work", "Burn-down chart", "Estimation in relative units",
+                "Definition of done", "Definition of ready", "Team empowerment and collective decision making",
+                "DevOps practice, regular releases", "Team with common goals and mission",
+                "Estimation of the whole story"
+            ]
+        },
+        "complicated_complex": {
+            "title": "Cynefin: Complicated & Stacey: Complex",
+            "characteristics": [
+                "This domain combines known-unknowns with high uncertainty and complexity in implementation.",
+                "While the problem space may be analyzable, the solution space is highly emergent.",
+                "Technical implementation involves significant innovation and complexity.",
+                "Expert analysis helps understand the problem, but solution development requires experimentation.",
+                "A blend of structured analysis and adaptive implementation is needed."
+            ],
+            "approach": "Analyze the problem space with experts, then move to iterative experimentation for implementation.",
+            "steps": [
+                "Expert Analysis: Engage domain experts to analyze and understand the problem space thoroughly.",
+                "Problem Decomposition: Break down the complex problem into analyzable components where possible.",
+                "Adaptive Planning: Create a high-level plan but expect and plan for significant adaptation during implementation.",
+                "Technical Experimentation: Use safe-to-fail experiments for technical implementation.",
+                "Incremental Validation: Regularly validate both the problem understanding and technical approach.",
+                "Feedback Integration: Maintain strong feedback loops between expert analysis and implementation teams.",
+                "Risk Management: Balance between analytical risk assessment and experimental risk mitigation.",
+                "Knowledge Sharing: Foster strong collaboration between domain experts and technical teams.",
+                "Continuous Learning: Document and share both analytical insights and experimental outcomes."
+            ],
+            "deliveryPractices": [
+                "Product roadmap with regular revisions",
+                "Strategic management through goals with tactical flexibility",
+                "Incremental delivery with experimentation phases",
+                "Iterations with both planned and exploratory work",
+                "Detailed analysis sessions with domain experts",
+                "Technical spikes and proof-of-concepts",
+                "Regular backlog refinement with both business and technical focus",
+                "Daily synchronization meetings",
+                "Frequent retrospectives focused on both process and technical learning",
+                "Demo sessions with stakeholder feedback",
+                "Mixed planning approach - some items planned in detail, others left for discovery",
+                "Strong documentation of both business rules and technical findings",
+                "Comprehensive testing strategy with focus on technical risk areas",
+                "Backlog as a living document, regularly updated with new learnings",
+                "Mixed estimation approach - detailed for known items, relative for complex ones",
+                "Clear definition of done with emphasis on technical quality"
+            ]
+        }
+    }
+}

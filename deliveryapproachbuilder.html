@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Approach Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-container label {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Delivery Approach Builder</h1>
+
+    <div class="filter-container">
+        <label><input type="checkbox" id="predictive"> Predictive</label>
+        <label><input type="checkbox" id="hybrid"> Hybrid</label>
+        <label><input type="checkbox" id="agile"> Agile</label>
+    </div>
+
+    <table id="approach-table">
+        <thead>
+            <tr>
+                <th>Deliver Approach</th>
+                <th>Area</th>
+                <th>Meaning and Description</th>
+                <th>Artifact Template</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        const data = [
+            {
+                "Deliver approach": "Project plan",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "Comprehensive project plan serves as the foundational blueprint that guides the entire project from start to finish. In a predictive setting, this plan is meticulously detailed and structured at the outset, with clearly defined phases, timelines, and deliverables. The goal is to minimize uncertainty by anticipating every aspect of the project, thereby allowing for strict adherence to the schedule and budget. In a hybrid setting, the project plan still serves as the central roadmap, but it incorporates elements of flexibility to adapt to changing conditions or new insights gained during execution. Hybrid approaches allow for iterative cycles or agile sprints within certain phases, enabling teams to respond to evolving requirements without losing sight of the project's ultimate objectives.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Sprint backlog",
+                "Area": "Agile",
+                "Meaning and description": "The sprint backlog is a subset of the product backlog, containing tasks and user stories that the team commits to completing in a sprint. It is a dynamic artifact that evolves as the team progresses through the sprint, allowing for real-time adjustments and refinements. The sprint backlog provides a clear and actionable plan for the team, ensuring that everyone is aligned on the sprint goals and priorities.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Risk register",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "A risk register is a tool used to document potential risks, their impact, and mitigation strategies. In predictive and hybrid approaches, the risk register is maintained throughout the project lifecycle to ensure that risks are identified, assessed, and managed proactively. It helps in minimizing the impact of uncertainties and ensures that the project stays on track.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Daily stand-up",
+                "Area": "Agile",
+                "Meaning and description": "The daily stand-up is a short, time-boxed meeting where team members share updates on their progress, discuss any impediments, and plan their work for the day. It fosters communication, collaboration, and transparency within the team, ensuring that everyone is aligned and any issues are addressed promptly.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Product backlog",
+                "Area": "Agile",
+                "Meaning and description": "The product backlog is a prioritized list of features, enhancements, and bug fixes that the team maintains for a product. It serves as the single source of truth for all the work that needs to be done, ensuring that the team is always working on the most valuable items first.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Gantt chart",
+                "Area": "Predictive",
+                "Meaning and description": "A Gantt chart is a visual representation of the project schedule, showing the start and finish dates of various tasks and activities. It is commonly used in predictive approaches to plan and track project progress, ensuring that all tasks are completed on time.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Kanban board",
+                "Area": "Agile, hybrid",
+                "Meaning and description": "A Kanban board is a visual tool used to manage and visualize the flow of work. It helps teams to see the status of tasks, identify bottlenecks, and improve workflow efficiency. Kanban boards are commonly used in agile and hybrid approaches to support continuous delivery and improvement.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Burn-down chart",
+                "Area": "Agile",
+                "Meaning and description": "A burn-down chart is a graphical representation of the work remaining versus time. It is used in agile approaches to track the progress of a sprint or release, helping the team to see if they are on track to complete the work on time.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Project plan",
+                "Area": "Predictive, hybrid",
+                "Meaning and description": "Comprehensive project plan serves as the foundational blueprint that guides the entire project from start to finish. In a predictive setting, this plan is meticulously detailed and structured at the outset, with clearly defined phases, timelines, and deliverables. The goal is to minimize uncertainty by anticipating every aspect of the project, thereby allowing for strict adherence to the schedule and budget. In a hybrid setting, the project plan still serves as the central roadmap, but it incorporates elements of flexibility to adapt to changing conditions or new insights gained during execution. Hybrid approaches allow for iterative cycles or agile sprints within certain phases, enabling teams to respond to evolving requirements without losing sight of the project's ultimate objectives.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Release plan",
+                "Area": "Agile, hybrid",
+                "Meaning and description": "A release plan outlines the timeline and deliverables for a product release. It helps teams to coordinate and manage the release process, ensuring that all necessary tasks are completed and the product is delivered on time.",
+                "Artifact Template": ""
+            },
+            {
+                "Deliver approach": "Work breakdown structure (WBS)",
+                "Area": "Predictive",
+                "Meaning and description": "A work breakdown structure (WBS) is a hierarchical decomposition of the total scope of work to be carried out by the project team. It helps in organizing and defining the work into manageable sections, ensuring that all aspects of the project are covered.",
+                "Artifact Template": ""
+            }
+        ];
+
+        function renderTable(filteredData) {
+            const tbody = document.querySelector("#approach-table tbody");
+            tbody.innerHTML = ""; // Clear existing rows
+
+            filteredData.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row["Deliver approach"]}</td>
+                    <td>${row["Area"]}</td>
+                    <td>${row["Meaning and description"]}</td>
+                    <td>${row["Artifact Template"]}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterData() {
+            const predictiveChecked = document.getElementById("predictive").checked;
+            const hybridChecked = document.getElementById("hybrid").checked;
+            const agileChecked = document.getElementById("agile").checked;
+
+            const filteredData = data.filter(row => {
+                const areas = row["Area"].toLowerCase().split(", ");
+                return (predictiveChecked && areas.includes("predictive")) ||
+                       (hybridChecked && areas.includes("hybrid")) ||
+                       (agileChecked && areas.includes("agile"));
+            });
+
+            renderTable(filteredData);
+        }
+
+        document.getElementById("predictive").addEventListener("change", function() {
+            if (this.checked) {
+                document.getElementById("agile").checked = false;
+            }
+            filterData();
+        });
+
+        document.getElementById("agile").addEventListener("change", function() {
+            if (this.checked) {
+                document.getElementById("predictive").checked = false;
+            }
+            filterData();
+        });
+
+        document.getElementById("hybrid").addEventListener("change", filterData);
+
+        // Initial render
+        filterData();
+    </script>
+
+</body>
+</html>

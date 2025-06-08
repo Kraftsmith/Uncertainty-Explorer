@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacey Matrix Assessment Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        /* Page-specific question group styling if different from common-styles.css */
+        .question-group {
+            /* Styles for .question-group are now in common-styles.css */
+            /* If Stacey needs a different width or margin, it can be specified here */
+             width: 100%; /* Retaining this as it was page-specific */
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="section-title">Stacey Matrix Assessment Tool</h1>
+        <p>Quantifies uncertainty in three critical areas of project execution to determine the optimal management approach using the Stacey Matrix framework.</p>
+
+    <!-- Progress Tracker -->
+    <div class="stacey-progress-tracker">
+        <div class="step active" data-panel-id="product-panel">Product</div>
+        <div class="step-connector"></div>
+        <div class="step" data-panel-id="technical-panel">Technical</div>
+        <div class="step-connector"></div>
+        <div class="step" data-panel-id="team-panel">Team</div>
+    </div>
+
+    <!-- Question Panels Wrapper -->
+    <div class="stacey-question-panels-wrapper" id="stacey-question-panels-wrapper"></div>
+    <!-- Assessment Results section remains below the panels -->
+   
+        <h2 class="section-title">Assessment Results</h2>
+        
+        <div class="chart-container stacey-chart-container">
+            <canvas id="staceyChart"></canvas>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color simple-color"></div>
+                <span>Simple (0-2.5)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color complicated-color"></div>
+                <span>Complicated (2.5-5)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color complex-color"></div>
+                <span>Complex (5-8)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color chaotic-color"></div>
+                <span>Chaotic (8-10)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color score-color"></div>
+                <span>Your Score</span>
+            </div>
+        </div>
+        
+        <div class="summary-section">
+            <div class="summary-card">
+                <h4>Product Uncertainty</h4>
+                <div class="score-display">
+                    <strong>Score:</strong> <span id="product-score">0.0</span>/10
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <h4>Technical Uncertainty</h4>
+                <div class="score-display">
+                    <strong>Score:</strong> <span id="technical-score">0.0</span>/10
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <h4>Team Uncertainty</h4>
+                <div class="score-display">
+                    <strong>Score:</strong> <span id="team-score">0.0</span>/10
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <strong>Uncertainty Area:</strong> <span id="area-name">Simple</span>
+            <div id="area-result" style="display: none;"></div> <!-- Retained for JS compatibility, but hidden -->
+        </div>
+        <!-- Action buttons for the Stacey assessment -->
+        <div style="margin-top: 20px;">
+                    <button id="next-btn">Save & Continue</button>
+                    <button id="reset-btn" style="background-color: var(--danger-color); margin-left: 10px;">Reset</button>
+                    <div style="margin-top: 10px;">
+                        <button id="test-complex-btn" style="margin-right: 10px;">Test Complex</button>
+                        <button id="test-complicated-btn">Test Complicated</button>
+                    </div>
+                </div>
+    </div> <!-- This closes the "Assessment Results" section -->
+
+    <script src="JavaScript/assessment-utils.js"></script>
+    <script src="Data/stacey-questions.js"></script>
+    <script src="JavaScript/question-section-component.js"></script> <!-- Added missing component script -->
+    <script src="JavaScript/stacey-chart-component.js"></script>
+    <script>
+        // Use staceyQuestionsData from stacey-questions.js
+        const STACEY_LOCAL_STORAGE_KEY = 'staceyMatrixResults';
+        let staceyComponent; // Declare staceyComponent here to make it accessible in panelNextButtons click
+
+        // Create questions when page loads
+        // Also handle tab/panel navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const steps = document.querySelectorAll('.stacey-progress-tracker .step');
+            const panelsWrapperId = 'stacey-question-panels-wrapper';
+
+            // Dynamically create question panels using the component
+            new QuestionSectionComponent({
+                parentElementId: panelsWrapperId,
+                panelId: 'product-panel',
+                isActivePanel: true,
+                sectionTitle: 'Product Uncertainty and Complexity',
+                titleTag: 'h3',
+                questionsContainerId: 'product-questions',
+                questionsData: staceyQuestionsData.product,
+                questionGroupName: 'product',
+                sliderStep: "1",
+                nextButtonConfig: {
+                    text: 'Next: Technical',
+                    nextPanelId: 'technical-panel',
+                    currentStepSelector: "[data-panel-id='product-panel']",
+                    nextStepSelector: "[data-panel-id='technical-panel']"
+                }
+            });
+
+            new QuestionSectionComponent({
+                parentElementId: panelsWrapperId,
+                panelId: 'technical-panel',
+                sectionTitle: 'Technical Uncertainty and Complexity',
+                titleTag: 'h3',
+                questionsContainerId: 'technical-questions',
+                questionsData: staceyQuestionsData.technical,
+                questionGroupName: 'technical',
+                sliderStep: "1",
+                nextButtonConfig: {
+                    text: 'Next: Team',
+                    nextPanelId: 'team-panel',
+                    currentStepSelector: "[data-panel-id='technical-panel']",
+                    nextStepSelector: "[data-panel-id='team-panel']"
+                }
+            });
+
+            new QuestionSectionComponent({
+                parentElementId: panelsWrapperId,
+                panelId: 'team-panel',
+                sectionTitle: 'Team Uncertainty and Complexity',
+                titleTag: 'h3',
+                questionsContainerId: 'team-questions',
+                questionsData: staceyQuestionsData.team,
+                questionGroupName: 'team',
+                sliderStep: "1",
+                nextButtonConfig: { text: 'Save & View Results', isFinal: true }
+            });
+
+            const panels = document.querySelectorAll('.stacey-question-panels-wrapper .question-panel');
+            const panelNextButtons = document.querySelectorAll('.panel-next-btn');
+
+            steps.forEach(step => {
+                step.addEventListener('click', function() {
+                    steps.forEach(s => s.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+
+                    this.classList.add('active');
+                    const panelId = this.getAttribute('data-panel-id');
+                    const activePanel = document.getElementById(panelId);
+                    if (activePanel) {
+                        activePanel.classList.add('active');
+                    }
+                });
+            });
+
+            panelNextButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('final-panel-next-btn')) {
+                        // Save results without redirecting
+                        staceyComponent.saveResults(false); 
+                        // Scroll to the chart
+                        const chartElement = document.getElementById('staceyChart');
+                        if (chartElement) {
+                            chartElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return;
+                    }
+
+                    const nextPanelId = this.getAttribute('data-next-panel-id');
+                    const currentStepSelector = this.getAttribute('data-current-step-selector');
+                    const nextStepSelector = this.getAttribute('data-next-step-selector');
+
+                    // Deactivate current step and panel
+                    document.querySelector(`.question-panel.active`).classList.remove('active');
+                    if (currentStepSelector) document.querySelector(currentStepSelector).classList.remove('active');
+                    
+                    // Activate next step and panel
+                    const nextPanel = document.getElementById(nextPanelId);
+                    if (nextPanel) nextPanel.classList.add('active');
+                    if (nextStepSelector) document.querySelector(nextStepSelector).classList.add('active');
+                });
+            });
+
+
+            if (typeof staceyQuestionsData === 'undefined' || typeof StaceyChartComponent === 'undefined' || typeof window.assessmentUtils === 'undefined') {
+                console.error("Required scripts (stacey-questions.js, stacey-chart-component.js, assessment-utils.js) not loaded.");
+                // Display an error message to the user on the page
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = "Error: Essential page components could not be loaded. Please refresh or contact support.";
+                errorDiv.style.color = "red";
+                errorDiv.style.padding = "20px";
+                errorDiv.style.textAlign = "center";
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+                return;
+            }
+
+            const staceyComponent = new StaceyChartComponent({
+                canvasId: 'staceyChart',
+                productQuestionsId: 'product-questions',
+                technicalQuestionsId: 'technical-questions',
+                teamQuestionsId: 'team-questions',
+                productScoreDisplayId: 'product-score',
+                technicalScoreDisplayId: 'technical-score',
+                teamScoreDisplayId: 'team-score',
+                areaDisplayId: 'area-result', // Points to the hidden div
+                areaNameDisplayId: 'area-name', // Points to the span for the text
+                localStorageKey: STACEY_LOCAL_STORAGE_KEY,
+                questionsData: staceyQuestionsData, // from stacey-questions.js
+                isInteractive: true,
+                redirectUrlOnSave: 'Cynefin.html',
+                nextButtonId: 'next-btn',
+                resetButtonId: 'reset-btn',
+                testComplexButtonId: 'test-complex-btn',
+                testComplicatedButtonId: 'test-complicated-btn',
+                sliderStep: "1" // Stacey matrix questions typically use step 1
+            });
+        });
+    </script>
+</body>
+</html>
