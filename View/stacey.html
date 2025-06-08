@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stacey Matrix Assessment Tool</title>
+    <title>Stacey Matrix Assessment</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.1/dist/chartjs-plugin-annotation.min.js"></script>
-    <link rel="stylesheet" href="common-styles.css">
+    <link rel="stylesheet" href="../common-styles.css">
     <style>
         /* Page-specific question group styling if different from common-styles.css */
         .question-group {
@@ -17,94 +17,104 @@
     </style>
 </head>
 <body>
-    <div class="section">
-        <h1 class="section-title">Stacey Matrix Assessment Tool</h1>
-        <p>Quantifies uncertainty in three critical areas of project execution to determine the optimal management approach using the Stacey Matrix framework.</p>
+    <div id="left-nav-placeholder"></div>
+    <div class="main-content-with-nav">
+        <div class="section">
+            <h1 class="section-title">Stacey Matrix Assessment</h1>
+            <p>Quantifies uncertainty in three critical areas of project execution to determine the optimal management approach using the Stacey Matrix framework.</p>
 
-    <!-- Progress Tracker -->
-    <div class="stacey-progress-tracker">
-        <div class="step active" data-panel-id="product-panel">Product</div>
-        <div class="step-connector"></div>
-        <div class="step" data-panel-id="technical-panel">Technical</div>
-        <div class="step-connector"></div>
-        <div class="step" data-panel-id="team-panel">Team</div>
-    </div>
+        <!-- Progress Tracker -->
+        <div class="stacey-progress-tracker">
+            <div class="step active" data-panel-id="product-panel">Product</div>
+            <div class="step-connector"></div>
+            <div class="step" data-panel-id="technical-panel">Technical</div>
+            <div class="step-connector"></div>
+            <div class="step" data-panel-id="team-panel">Team</div>
+        </div>
 
-    <!-- Question Panels Wrapper -->
-    <div class="stacey-question-panels-wrapper" id="stacey-question-panels-wrapper"></div>
-    <!-- Assessment Results section remains below the panels -->
-   
-        <h2 class="section-title">Assessment Results</h2>
-        
-        <div class="chart-container stacey-chart-container">
-            <canvas id="staceyChart"></canvas>
-        </div>
-        
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color simple-color"></div>
-                <span>Simple (0-2.5)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color complicated-color"></div>
-                <span>Complicated (2.5-5)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color complex-color"></div>
-                <span>Complex (5-8)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color chaotic-color"></div>
-                <span>Chaotic (8-10)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color score-color"></div>
-                <span>Your Score</span>
-            </div>
-        </div>
-        
-        <div class="summary-section">
-            <div class="summary-card">
-                <h4>Product Uncertainty</h4>
-                <div class="score-display">
-                    <strong>Score:</strong> <span id="product-score">0.0</span>/10
+        <!-- Question Panels Wrapper -->
+        <div class="stacey-question-panels-wrapper" id="stacey-question-panels-wrapper"></div>
+        <!-- Assessment Results section remains below the panels -->
+    
+            <h2 class="section-title">Ralph Stacey Matrix</h2>
+            <!-- Placeholder for the StaceyChartComponent -->
+            <div id="stacey-chart-component-placeholder"></div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color simple-color"></div>
+                    <span>Simple (0-2.5)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color complicated-color"></div>
+                    <span>Complicated (2.5-5)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color complex-color"></div>
+                    <span>Complex (5-8)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color chaotic-color"></div>
+                    <span>Chaotic (8-10)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color score-color"></div>
+                    <span>Your Score</span>
                 </div>
             </div>
             
-            <div class="summary-card">
-                <h4>Technical Uncertainty</h4>
-                <div class="score-display">
-                    <strong>Score:</strong> <span id="technical-score">0.0</span>/10
+            <div class="summary-section">
+                                <div class="summary-card">
+                    <h4>Uncertainty Area</h4>
+                    <!-- The area-display class will provide the colored background -->
+                    <!-- The id="area-result" div is used by JS to set the background color class -->
+                    <!-- The id="area-name" span is used by JS to set the text -->
+                    <div class="area-display simple-area" id="area-result">
+                        <span id="area-name">Simple</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="summary-card">
-                <h4>Team Uncertainty</h4>
-                <div class="score-display">
-                    <strong>Score:</strong> <span id="team-score">0.0</span>/10
+                <div class="summary-card">
+                    <h4>Product Uncertainty</h4>
+                    <div class="score-display">
+                        <strong>Score:</strong> <span id="product-score">0.0</span>/10
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 20px; text-align: center;">
-            <strong>Uncertainty Area:</strong> <span id="area-name">Simple</span>
-            <div id="area-result" style="display: none;"></div> <!-- Retained for JS compatibility, but hidden -->
-        </div>
-        <!-- Action buttons for the Stacey assessment -->
-        <div style="margin-top: 20px;">
-                    <button id="next-btn">Save & Continue</button>
-                    <button id="reset-btn" style="background-color: var(--danger-color); margin-left: 10px;">Reset</button>
-                    <div style="margin-top: 10px;">
-                        <button id="test-complex-btn" style="margin-right: 10px;">Test Complex</button>
-                        <button id="test-complicated-btn">Test Complicated</button>
-                    </div> 
+                
+                <div class="summary-card">
+                    <h4>Technical Uncertainty</h4>
+                    <div class="score-display">
+                        <strong>Score:</strong> <span id="technical-score">0.0</span>/10
+                    </div>
                 </div>
-    </div> <!-- This closes the "Assessment Results" section -->
+                
+                <div class="summary-card">
+                    <h4>Team Uncertainty</h4>
+                    <div class="score-display">
+                        <strong>Score:</strong> <span id="team-score">0.0</span>/10
+                    </div>
+                </div>
 
-    <script src="JavaScript/assessment-utils.js"></script>
-    <script src="Data/stacey-questions.js"></script>
-    <script src="JavaScript/question-section-component.js"></script> <!-- Added missing component script -->
-    <script src="JavaScript/stacey-chart-component.js"></script>
+            </div>
+            <!-- Action buttons for the Stacey assessment -->
+            <div style="margin-top: 20px;">
+                        <button id="next-btn">Save & Continue</button>
+                        <button id="reset-btn" style="background-color: var(--danger-color); margin-left: 10px;">Reset</button>
+                        <div style="margin-top: 10px;">
+                            <button id="test-complex-btn" style="margin-right: 10px;">Test Complex</button>
+                            <button id="test-complicated-btn">Test Complicated</button>
+                        </div> 
+                    </div>
+        </div> <!-- This closes the "Assessment Results" section -->
+    </div> <!-- This closes main-content-with-nav -->
+
+    <script src="../JavaScript/assessment-utils.js"></script>
+    <script src="../Data/stacey-questions.js"></script>
+    <script src="../JavaScript/question-section-component.js"></script> <!-- Added missing component script -->
+    <script src="../JavaScript/stacey-chart-component.js"></script>
+    <script src="../JavaScript/navigation-component.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => loadNavigationComponent('left-nav-placeholder'));
+    </script>
     <script>
         // Use staceyQuestionsData from stacey-questions.js
         const STACEY_LOCAL_STORAGE_KEY = 'staceyMatrixResults';
@@ -114,7 +124,8 @@
         // Also handle tab/panel navigation
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.stacey-progress-tracker .step');
-            const panelsWrapperId = 'stacey-question-panels-wrapper';
+            const panelsWrapperId = 'stacey-question-panels-wrapper'; // For QuestionSectionComponent
+            const chartComponentPlaceholderId = 'stacey-chart-component-placeholder'; // For StaceyChartComponent
 
             // Dynamically create question panels using the component
             new QuestionSectionComponent({
@@ -223,15 +234,18 @@
             }
 
             const staceyComponent = new StaceyChartComponent({
-                canvasId: 'staceyChart',
+                parentElementId: chartComponentPlaceholderId, // Component will create canvas inside this
+                // canvasId: 'staceyChart', // Optional: component can generate its own canvas ID or use this
                 productQuestionsId: 'product-questions',
                 technicalQuestionsId: 'technical-questions',
                 teamQuestionsId: 'team-questions',
                 productScoreDisplayId: 'product-score',
                 technicalScoreDisplayId: 'technical-score',
                 teamScoreDisplayId: 'team-score',
-                areaDisplayId: 'area-result', // Points to the hidden div
-                areaNameDisplayId: 'area-name', // Points to the span for the text
+                areaDisplayId: 'area-result',
+                areaNameDisplayId: 'area-name',
+                // The above IDs for scores/area are for elements *outside* the chart component's direct rendering,
+                // typically in summary cards. The component updates them.
                 localStorageKey: STACEY_LOCAL_STORAGE_KEY,
                 questionsData: staceyQuestionsData, // from stacey-questions.js
                 isInteractive: true,

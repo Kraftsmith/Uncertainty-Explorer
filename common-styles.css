@@ -1,3 +1,10 @@
+/* Global box-sizing reset for more predictable layouts */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 :root {
     --primary-color: #2c3e50; /* Base text and dark elements */
     --primary-dark-color: #1a237e; /* Darker shade for titles or accents */
@@ -30,13 +37,11 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     line-height: 1.6;
-    color: #333; /* Default text color */
-    margin: 0 auto; 
-    padding: 24px; /* 8px based */
+    color: var(--primary-color); /* Default text color, using a variable */
+    margin: 0; 
     background-color: #f7f9f8;
-    max-width: 1200px; 
 }
-
+ 
 h1, h2, h3, h4 {
     color: var(--primary-dark-color); /* Darker titles */
     margin-top: 0;
@@ -45,6 +50,116 @@ h1, h2, h3, h4 {
 /* Specific color for h3 elements */
 h3 {
     color: var(--secondary-color); /* #3498db */
+}
+
+/* Navigation Styles */
+.left-nav {
+    width: 220px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background-color: var(--primary-color);
+    padding-top: 50px; /* Make space for collapse button if it's at the top */
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    transform: translateX(0); /* Visible by default on larger screens */
+    z-index: 1000; /* Ensure nav is on top */
+}
+
+.left-nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Allow scrolling for links if nav is short */
+}
+
+.left-nav li a {
+    display: block;
+    padding: 12px 15px;
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 8px; /* Spacing between items */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
+    display: flex; /* For aligning icon and text */
+    align-items: center;
+}
+
+.nav-link-icon {
+    margin-right: 10px;
+    display: inline-block;
+    transition: margin 0.3s ease-in-out;
+}
+.nav-link-text {
+    display: inline-block;
+    transition: opacity 0.3s ease-in-out, max-width 0.3s ease-in-out;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 200px; /* Adjust as needed */
+}
+
+.left-nav li a:hover {
+    background-color: var(--secondary-dark-color); /* Darker accent on hover */
+    color: var(--white);
+}
+
+.left-nav li a.active {
+    background-color: var(--secondary-color); /* Main accent for active */
+    color: var(--white);
+    font-weight: 700;
+}
+
+.main-content-with-nav {
+    margin-left: 220px; /* Same as nav width */
+    padding: 24px;
+    /* width: calc(100% - 220px); // Width is implicitly 100% minus margin */
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Desktop Navigation Collapse Button */
+.desktop-nav-collapse-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--secondary-dark-color);
+    color: var(--white);
+    border: none;
+    padding: 5px 10px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 1001; /* Above nav links */
+}
+
+/* Hamburger Toggle Button */
+.nav-toggle-btn {
+    display: none; /* Hidden by default, shown on mobile */
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1005; /* Above overlay, potentially above nav when closed */
+    background: var(--secondary-color);
+    color: var(--white);
+    border: none;
+    padding: 8px 12px;
+    font-size: 1.5em;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Overlay for mobile navigation */
+.nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* Below the nav, above main content */
 }
 
 .section {
@@ -57,8 +172,8 @@ h3 {
 
 .section-title {
       padding-bottom: 4px;
-    margin-bottom: 8px; /* 8px based */
-    font-size: 1.8em; /* Consistent title size */
+    margin-bottom: 4px; /* 8px based */
+    font-size: 1.2em; /* Consistent title size */
 }
 
 .question-group {
@@ -70,7 +185,6 @@ h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px;
     margin-bottom: 8px;
     background-color: #f9f9f9; /* Light background for each question item */
     box-sizing: border-box;
@@ -78,6 +192,7 @@ h3 {
 }
 
 .question-container label {
+    padding: 8px; /* Add padding here instead of on .question-container */
     flex: 0 0 65%; /* This is a ratio, not direct spacing */
     margin-right: 16px;
     font-weight: 500;
@@ -85,6 +200,7 @@ h3 {
 }
 
 .question-container .slider-wrapper {
+    padding: 8px; /* Add padding here for consistency */
     flex: 0 0 30%;
     display: flex;
     align-items: center;
@@ -227,6 +343,7 @@ button:active {
 
 @media (max-width: 768px) {
     .section {
+        /* padding: 16px; */ /* Already 16px, no change needed from previous */
         padding: 16px; /* 8px based */
     }
     
@@ -251,8 +368,54 @@ button:active {
         width: 100%;
         flex-basis: auto;
     }
+
+    /* Responsive Navigation: Collapsible */
+    .nav-toggle-btn {
+        display: block; /* Show hamburger on mobile */
+    }
+
+    .desktop-nav-collapse-btn {
+        display: none; /* Hide desktop collapse button on mobile */
+    }
+
+    .left-nav {
+        transform: translateX(-100%); /* Hidden off-screen by default */
+        transition: transform 0.3s ease-in-out;
+        z-index: 1001; /* Higher than overlay */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Add shadow when open */
+    }
+
+    .left-nav.open {
+        transform: translateX(0); /* Slide in when open */
+    }
+
+    .main-content-with-nav {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .nav-overlay.active {
+        display: block;
+    }
 }
 
+/* Styles for Desktop Collapsed Navigation */
+body.desktop-nav-collapsed .left-nav {
+    width: 70px; /* Collapsed width */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+body.desktop-nav-collapsed .left-nav .nav-link-text {
+    opacity: 0;
+    max-width: 0;
+}
+body.desktop-nav-collapsed .left-nav .nav-link-icon {
+    margin-right: 0; /* Remove margin when text is hidden */
+}
+body.desktop-nav-collapsed .main-content-with-nav {
+    margin-left: 70px; /* Adjust to collapsed nav width */
+}
 /* Styles moved from stacey.html */
 .stacey-progress-tracker {
     display: flex;
@@ -272,6 +435,7 @@ button:active {
     color: var(--dark-gray);
     background-color: var(--white);
     transition: all 0.3s ease;
+    white-space: nowrap; /* Prevent text wrapping inside steps */
 }
 .step.active {
     background-color: var(--secondary-color);

@@ -6,17 +6,36 @@ class StaceyChartComponent {
             redirectUrlOnSave: null,
             initialData: null,
             sliderStep: "1",
+            parentElementId: null, // New: ID of the container for the component
             ...options
         };
         this.staceyChart = null;
         this.questions = this.options.questionsData;
         this.localStorageKey = this.options.localStorageKey;
 
-        if (!document.getElementById(this.options.canvasId)) {
-            console.error(`StaceyChartComponent: Canvas with ID '${this.options.canvasId}' not found.`);
+        if (!this.options.parentElementId || !document.getElementById(this.options.parentElementId)) {
+            console.error(`StaceyChartComponent: Parent element with ID '${this.options.parentElementId}' not found or not provided.`);
             return;
         }
+        this.parentElement = document.getElementById(this.options.parentElementId);
+        this.renderBaseStructure(); // Create canvas and score display elements
 
+        // Ensure IDs for score displays are consistent if still needed by external HTML (e.g. summary cards)
+        // Or, if summary cards are also part of this component, they'd be rendered here.
+        // For now, we assume summary cards are separate but might use these IDs.
+        // If not, these IDs can be internal to the component.
+        this.productScoreDisplayElement = document.getElementById(this.options.productScoreDisplayId || 'stacey-product-score');
+        this.technicalScoreDisplayElement = document.getElementById(this.options.technicalScoreDisplayId || 'stacey-technical-score');
+        this.teamScoreDisplayElement = document.getElementById(this.options.teamScoreDisplayId || 'stacey-team-score');
+        this.areaNameDisplayElement = document.getElementById(this.options.areaNameDisplayId || 'stacey-area-name');
+        this.areaResultDisplayElement = document.getElementById(this.options.areaDisplayId || 'stacey-area-result');
+
+        // Check if elements were found/created, especially if IDs were passed vs generated
+        if (!this.productScoreDisplayElement || !this.technicalScoreDisplayElement || !this.teamScoreDisplayElement || !this.areaNameDisplayElement || !this.areaResultDisplayElement) {
+            // This check is more relevant if we expect these IDs to be pre-existing.
+            // If we generate them, this check might be for the generation process.
+            // console.warn("StaceyChartComponent: One or more display elements not found/created correctly.");
+        }
         if (this.options.isInteractive) {
             if (!this.questions || !this.questions.product || !this.questions.technical || !this.questions.team) {
                  console.error("StaceyChartComponent: questionsData is missing or incomplete for interactive mode.");
@@ -26,6 +45,42 @@ class StaceyChartComponent {
         } else {
             this.initDisplay();
         }
+    }
+
+    renderBaseStructure() {
+        // Clear parent element
+        this.parentElement.innerHTML = '';
+
+        // Create canvas
+        this.canvas = document.createElement('canvas');
+        // Use a consistent ID or allow override via options if needed for external CSS targeting
+        this.canvas.id = this.options.canvasId || 'stacey-chart-canvas-generated';
+        const chartContainer = document.createElement('div');
+        chartContainer.className = 'chart-container stacey-chart-container'; // Use existing styles
+        chartContainer.appendChild(this.canvas);
+        this.parentElement.appendChild(chartContainer);
+
+        // Create score display elements if they are meant to be part of this component's view
+        // This example assumes they are part of the component.
+        // If they are in separate summary cards in the HTML, then this part might not be needed,
+        // and the component would continue to use the passed-in IDs for existing elements.
+        // For a more encapsulated component, we create them here.
+
+        // Note: The original HTML has these scores in "summary-card" divs.
+        // If we want to keep that structure, the component would need to create those cards too,
+        // or the HTML would provide placeholders for these cards.
+        // For simplicity, this example doesn't recreate the full "summary-card" structure here,
+        // assuming the component is primarily for the chart and its direct data readouts.
+        // The IDs like 'product-score', 'technical-score' are still used by the component
+        // to update these values, so the HTML that uses these IDs (e.g. summary.html cards)
+        // will still be updated. The component itself doesn't need to render them if they exist elsewhere.
+
+        // If the score displays (product-score, technical-score, team-score, area-name)
+        // are *not* meant to be rendered by this component directly within its parentElement,
+        // then this renderBaseStructure method would only create the canvas.
+        // The current implementation of the component updates existing elements by ID,
+        // so we'll stick to that for now and assume the HTML provides these score display elements.
+        // This renderBaseStructure will primarily ensure the canvas is created.
     }
 
     initInteractive() {
@@ -49,7 +104,7 @@ class StaceyChartComponent {
     }
 
     initChart() {
-        const ctx = document.getElementById(this.options.canvasId).getContext('2d');
+        const ctx = this.canvas.getContext('2d'); // Use the canvas created by the component
         this.staceyChart = new Chart(ctx, {
             type: 'scatter',
             data: {
@@ -151,34 +206,33 @@ class StaceyChartComponent {
             adjProductScore = Math.min(parseFloat((productScoreRaw + adj).toFixed(1)), 10);
             adjTechnicalScore = Math.min(parseFloat((technicalScoreRaw + adj).toFixed(1)), 10);
         }
-        
-        document.getElementById(this.options.productScoreDisplayId).textContent = adjProductScore;
-        document.getElementById(this.options.technicalScoreDisplayId).textContent = adjTechnicalScore;
-        document.getElementById(this.options.teamScoreDisplayId).textContent = teamScoreRaw.toFixed(1);
-        
+
+        if (this.productScoreDisplayElement) this.productScoreDisplayElement.textContent = adjProductScore;
+        if (this.technicalScoreDisplayElement) this.technicalScoreDisplayElement.textContent = adjTechnicalScore;
+        if (this.teamScoreDisplayElement) this.teamScoreDisplayElement.textContent = teamScoreRaw.toFixed(1);
+
         this.staceyChart.data.datasets[0].data = [{x: adjTechnicalScore, y: adjProductScore}];
         this.staceyChart.options.plugins.annotation.annotations.guidelineX.value = adjProductScore;
         this.staceyChart.options.plugins.annotation.annotations.guidelineY.value = adjTechnicalScore;
         this.staceyChart.update();
         
         const area = this.determineComplexityArea(adjTechnicalScore, adjProductScore);
-        document.getElementById(this.options.areaNameDisplayId).textContent = area;
-        document.getElementById(this.options.areaDisplayId).className = 'area-display ' + area.toLowerCase() + '-area';
+        if (this.areaNameDisplayElement) this.areaNameDisplayElement.textContent = area;
+        if (this.areaResultDisplayElement) this.areaResultDisplayElement.className = 'area-display ' + area.toLowerCase() + '-area';
     }
     
     updateChartWithExternalData({ technicalScore, productScore, teamScore, area }) {
-        document.getElementById(this.options.productScoreDisplayId).textContent = productScore.toFixed(1);
-        document.getElementById(this.options.technicalScoreDisplayId).textContent = technicalScore.toFixed(1);
-        const teamScoreEl = document.getElementById(this.options.teamScoreDisplayId);
-        if (teamScoreEl) teamScoreEl.textContent = teamScore.toFixed(1);
+        if (this.productScoreDisplayElement) this.productScoreDisplayElement.textContent = productScore.toFixed(1);
+        if (this.technicalScoreDisplayElement) this.technicalScoreDisplayElement.textContent = technicalScore.toFixed(1);
+        if (this.teamScoreDisplayElement) this.teamScoreDisplayElement.textContent = teamScore.toFixed(1);
 
         this.staceyChart.data.datasets[0].data = [{ x: technicalScore, y: productScore }];
         this.staceyChart.options.plugins.annotation.annotations.guidelineX.value = productScore;
         this.staceyChart.options.plugins.annotation.annotations.guidelineY.value = technicalScore;
         this.staceyChart.update();
 
-        document.getElementById(this.options.areaNameDisplayId).textContent = area;
-        document.getElementById(this.options.areaDisplayId).className = 'area-display ' + area.toLowerCase() + '-area';
+        if (this.areaNameDisplayElement) this.areaNameDisplayElement.textContent = area;
+        if (this.areaResultDisplayElement) this.areaResultDisplayElement.className = 'area-display ' + area.toLowerCase() + '-area';
     }
 
     determineComplexityArea(technicalScore, productScore) {
@@ -197,19 +251,19 @@ class StaceyChartComponent {
             product: {
                 questions: this.questions.product,
                 scores: this.getSliderAnswers(this.options.productQuestionsId, this.questions.product),
-                average: parseFloat(document.getElementById(this.options.productScoreDisplayId).textContent)
+                average: this.productScoreDisplayElement ? parseFloat(this.productScoreDisplayElement.textContent) : 0
             },
             technical: {
                 questions: this.questions.technical,
                 scores: this.getSliderAnswers(this.options.technicalQuestionsId, this.questions.technical),
-                average: parseFloat(document.getElementById(this.options.technicalScoreDisplayId).textContent)
+                average: this.technicalScoreDisplayElement ? parseFloat(this.technicalScoreDisplayElement.textContent) : 0
             },
             team: {
                 questions: this.questions.team,
                 scores: this.getSliderAnswers(this.options.teamQuestionsId, this.questions.team),
-                average: parseFloat(document.getElementById(this.options.teamScoreDisplayId).textContent)
+                average: this.teamScoreDisplayElement ? parseFloat(this.teamScoreDisplayElement.textContent) : 0
             },
-            area: document.getElementById(this.options.areaNameDisplayId).textContent,
+            area: this.areaNameDisplayElement ? this.areaNameDisplayElement.textContent : "Unknown",
             timestamp: new Date().toISOString()
         };
         assessmentUtils.saveToLocalStorage(this.localStorageKey, results);

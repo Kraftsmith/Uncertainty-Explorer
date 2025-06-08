@@ -75,28 +75,33 @@ app.post('/api/send-email', upload.single('pdf'), async (req, res) => {
 // though express.static will serve them if names match.
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'home.html'));
+    // Assuming your main landing page is now index.html in the View folder
+    res.sendFile(path.join(__dirname, 'View', 'index.html'));
 });
 
 app.get('/stacey', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stacey.html'));
+    res.sendFile(path.join(__dirname, 'View', 'stacey.html'));
 });
 
 app.get('/cynefin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Cynefin.html'));
+    res.sendFile(path.join(__dirname, 'View', 'Cynefin.html'));
 });
 
 app.get('/summary', (req, res) => {
-    res.sendFile(path.join(__dirname, 'summary.html'));
+    res.sendFile(path.join(__dirname, 'View', 'summary.html'));
 });
 
 app.get('/approachbuilder', (req, res) => {
     // Assuming 'deliveryapproachbuilder.html' is the correct one
-    res.sendFile(path.join(__dirname, 'deliveryapproachbuilder.html'));
+    res.sendFile(path.join(__dirname, 'View', 'deliveryapproachbuilder.html'));
 });
 
 app.get('/radar', (req, res) => {
-    res.sendFile(path.join(__dirname, 'radar.html'));
+    res.sendFile(path.join(__dirname, 'View', 'radar.html'));
+});
+
+app.get('/home', (req, res) => { // If you have a specific home.html in View
+    res.sendFile(path.join(__dirname, 'View', 'home.html'));
 });
 
 // Add other routes as needed for agilequestions.html, etc.
