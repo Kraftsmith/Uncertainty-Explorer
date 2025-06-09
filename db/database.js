@@ -10,55 +10,79 @@ class Database {
             fs.mkdirSync(dbDir);
         }
 
-        this.db = new sqlite3.Database(path.join(dbDir, 'UncertaintyExplorer.db'), (err) => {
-            if (err) {
-                console.error('Error opening database:', err);
-            } else {
-                console.log('Connected to database');
-                this.initializeDatabase();
+        const dbPath = path.join(dbDir, 'UncertaintyExplorer.db');
+        
+        this.db = new sqlite3.Database(dbPath, 
+            sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, 
+            (err) => {
+                if (err) {
+                    console.error('Error opening database:', err);
+                } else {
+                    console.log('Connected to database');
+                    this.initializeDatabase();
+                }
             }
-        });
+        );
+
+        // Enable foreign keys
+        this.db.run('PRAGMA foreign_keys = ON');
     }
 
     initializeDatabase() {
         const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-        this.db.exec(schema, (err) => {
-            if (err) {
-                console.error('Error initializing database:', err);
-            } else {
-                console.log('Database schema initialized');
-            }
+        
+        // Run all statements without transaction since we're creating tables
+        const statements = schema.split(';')
+            .map(stmt => stmt.trim())
+            .filter(stmt => stmt.length > 0);
+        
+        statements.forEach(statement => {
+            this.db.run(statement, (err) => {
+                if (err && !err.message.includes('already exists')) {
+                    console.error('Error executing statement:', err);
+                }
+            });
         });
+        
+        console.log('Database schema initialized successfully');
     }
 
     // User operations
-    createUser(email) {
+    createUser(email, projectName) {
         return new Promise((resolve, reject) => {
-            const sqlInsert = 'INSERT OR IGNORE INTO users (email) VALUES (?)';
-            this.db.run(sqlInsert, [email], function(err) { // Use 'function' for 'this' context
+            const db = this.db; // Store reference to this.db
+            
+            const sqlInsert = 'INSERT OR IGNORE INTO users (email, project_name) VALUES (?, ?)';
+            db.run(sqlInsert, [email, projectName], function(err) {
                 if (err) {
                     return reject(err);
+                }
+                
+                // If no row was inserted, the user might already exist
+                if (this.changes === 0) {
+                    const sqlSelect = 'SELECT id, email, project_name FROM users WHERE email = ?';
+                    db.get(sqlSelect, [email], (selectErr, row) => {
+                        if (selectErr) {
+                            return reject(selectErr);
+                        }
+                        if (row && row.id) {
+                            // Update project name if it's different
+                            if (row.project_name !== projectName) {
+                                db.run('UPDATE users SET project_name = ? WHERE id = ?', 
+                                    [projectName, row.id], (updateErr) => {
+                                    if (updateErr) {
+                                        console.error('Error updating project name:', updateErr);
+                                    }
+                                });
+                            }
+                            resolve(row);
+                        } else {
+                            reject(new Error(`User with email ${email} not found after IGNORE, and not inserted.`));
+                        }
+                    });
                 } else {
-                    // If no row was inserted (this.changes === 0), it means the user likely already exists
-                    // due to the UNIQUE constraint on email and IGNORE clause.
-                    if (this.changes === 0) {
-                        const sqlSelect = 'SELECT id, email FROM users WHERE email = ?';
-                        this.db.get(sqlSelect, [email], (selectErr, row) => {
-                            if (selectErr) {
-                                return reject(selectErr);
-                            }
-                            if (row && row.id) { // Ensure row exists and has an id
-                                resolve(row);
-                            } else {
-                                // This case should ideally not be reached if INSERT OR IGNORE
-                                // failed due to a UNIQUE constraint, as the row should exist.
-                                reject(new Error(`User with email ${email} not found after IGNORE, and not inserted.`));
-                            }
-                        });
-                    } else {
-                        // New user was inserted
-                        resolve({ id: this.lastID, email: email });
-                    }
+                    // New user was inserted
+                    resolve({ id: this.lastID, email: email, project_name: projectName });
                 }
             });
         });
@@ -67,68 +91,84 @@ class Database {
     // Assessment operations
     saveStaceyAssessment(userId, assessment) {
         return new Promise((resolve, reject) => {
-            this.db.run('BEGIN TRANSACTION');
-            
-            const sql = `INSERT INTO stacey_assessments 
-                        (user_id, product_score, technical_score, team_score, area_result) 
-                        VALUES (?, ?, ?, ?, ?)`;
-            
-            this.db.run(sql, 
-                [userId, assessment.productScore, assessment.technicalScore, 
-                 assessment.teamScore, assessment.areaResult], 
-                function(err) {
+            const db = this.db;
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION');
+
+                const sql = `INSERT INTO stacey_assessments 
+                    (user_id, product_score, technical_score, team_score, area_result) 
+                    VALUES (?, ?, ?, ?, ?)`;
+
+                db.run(sql, [
+                    userId, 
+                    assessment.productScore, 
+                    assessment.technicalScore, 
+                    assessment.teamScore,
+                    assessment.area
+                ], function(err) {
                     if (err) {
-                        this.db.run('ROLLBACK');
-                        reject(err);
-                        return;
+                        console.error('Error inserting assessment:', err);
+                        db.run('ROLLBACK');
+                        return reject(err);
                     }
 
                     const assessmentId = this.lastID;
+
+                    // Insert individual responses if they exist
                     const responses = assessment.responses || [];
-                    
-                    // Insert individual responses
                     const responsePromises = responses.map(response => {
-                        return new Promise((resolve, reject) => {
-                            const sql = `INSERT INTO stacey_responses 
-                                       (assessment_id, question_id, score, category) 
-                                       VALUES (?, ?, ?, ?)`;
-                            this.db.run(sql, 
-                                [assessmentId, response.questionId, 
-                                 response.score, response.category], 
-                                (err) => {
-                                    if (err) reject(err);
-                                    else resolve();
-                                });
+                        return new Promise((resolveResponse, rejectResponse) => {
+                            const responseSql = `INSERT INTO stacey_responses 
+                                (assessment_id, question_id, score, category) 
+                                VALUES (?, ?, ?, ?)`;
+                            
+                            db.run(responseSql, [
+                                assessmentId,
+                                response.questionId,
+                                response.score,
+                                response.category
+                            ], (err) => {
+                                if (err) rejectResponse(err);
+                                else resolveResponse();
+                            });
                         });
                     });
 
                     Promise.all(responsePromises)
                         .then(() => {
-                            this.db.run('COMMIT');
-                            resolve(assessmentId);
+                            db.run('COMMIT', (commitErr) => {
+                                if (commitErr) {
+                                    console.error('Error committing transaction:', commitErr);
+                                    db.run('ROLLBACK');
+                                    reject(commitErr);
+                                } else {
+                                    resolve(assessmentId);
+                                }
+                            });
                         })
                         .catch(err => {
-                            this.db.run('ROLLBACK');
+                            console.error('Error saving responses:', err);
+                            db.run('ROLLBACK');
                             reject(err);
                         });
+                });
             });
         });
-    }
-
-    saveCynefinAssessment(userId, assessment) {
+    }    saveCynefinAssessment(userId, assessment) {
         return new Promise((resolve, reject) => {
-            this.db.run('BEGIN TRANSACTION');
+            const db = this.db;
+            db.run('BEGIN TRANSACTION');
             
             const sql = `INSERT INTO cynefin_assessments 
                         (user_id, domain, decision_score, cause_effect_score) 
                         VALUES (?, ?, ?, ?)`;
             
-            this.db.run(sql, 
+            db.run(sql, 
                 [userId, assessment.domain, assessment.decisionScore, 
                  assessment.causeEffectScore], 
                 function(err) {
                     if (err) {
-                        this.db.run('ROLLBACK');
+                        db.run('ROLLBACK');
                         reject(err);
                         return;
                     }
@@ -138,27 +178,27 @@ class Database {
                     
                     // Insert individual responses
                     const responsePromises = responses.map(response => {
-                        return new Promise((resolve, reject) => {
-                            const sql = `INSERT INTO cynefin_responses 
+                        return new Promise((resolveResponse, rejectResponse) => {
+                            const responseSql = `INSERT INTO cynefin_responses 
                                        (assessment_id, question_id, score, category) 
                                        VALUES (?, ?, ?, ?)`;
-                            this.db.run(sql, 
+                            db.run(responseSql, 
                                 [assessmentId, response.questionId, 
                                  response.score, response.category], 
                                 (err) => {
-                                    if (err) reject(err);
-                                    else resolve();
+                                    if (err) rejectResponse(err);
+                                    else resolveResponse();
                                 });
                         });
                     });
 
                     Promise.all(responsePromises)
                         .then(() => {
-                            this.db.run('COMMIT');
+                            db.run('COMMIT');
                             resolve(assessmentId);
                         })
                         .catch(err => {
-                            this.db.run('ROLLBACK');
+                            db.run('ROLLBACK');
                             reject(err);
                         });
             });

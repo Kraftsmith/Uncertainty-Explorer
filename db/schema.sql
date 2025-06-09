@@ -2,6 +2,7 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
+    project_name TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -49,7 +50,7 @@ CREATE TABLE cynefin_responses (
 );
 
 -- Indexes for better query performance
-CREATE INDEX idx_stacey_user ON stacey_assessments(user_id);
-CREATE INDEX idx_cynefin_user ON cynefin_assessments(user_id);
-CREATE INDEX idx_stacey_responses ON stacey_responses(assessment_id);
-CREATE INDEX idx_cynefin_responses ON cynefin_responses(assessment_id);
+CREATE INDEX IF NOT EXISTS idx_stacey_user ON stacey_assessments(user_id);
+CREATE INDEX IF NOT EXISTS idx_cynefin_user ON cynefin_assessments(user_id);
+CREATE INDEX IF NOT EXISTS idx_stacey_responses ON stacey_responses(assessment_id);
+CREATE INDEX IF NOT EXISTS idx_cynefin_responses ON cynefin_responses(assessment_id);
