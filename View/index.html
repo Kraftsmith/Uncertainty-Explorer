@@ -51,12 +51,11 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.user && data.user.id) {
-                        // Save user info to localStorage
-                        localStorage.setItem('userEmailForAssessment', email);
+                        // Save user info to localStorage                        localStorage.setItem('userEmailForAssessment', email);
                         localStorage.setItem('projectNameForAssessment', projectName);
                         localStorage.setItem('userId', data.user.id); // Save the ID from the DB
                         // Navigate to the first assessment
-                        window.location.href = 'stacey.html'; 
+                        window.location.href = '/stacey';
                     } else {
                         throw new Error(data.error || 'Failed to register user or get user ID.');
                     }

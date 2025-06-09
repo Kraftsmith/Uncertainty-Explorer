@@ -3,12 +3,11 @@
 function loadNavigationComponent(placeholderId) {
     const navHtml = `
         <nav class="left-nav">
-            <button id="desktop-nav-collapse-toggle" class="desktop-nav-collapse-btn" aria-label="Collapse navigation" aria-expanded="true">&laquo;</button>
-            <ul>
-                <li><a href="/View/index.html"> <span class="nav-link-text">Home</span></a></li>
-                <li><a href="/View/stacey.html"><span class="nav-link-text">Stacey Matrix</span></a></li>
-                <li><a href="/View/Cynefin.html"><span class="nav-link-text">Cynefin Framework</span></a></li>
-                <li><a href="/View/summary.html"><span class="nav-link-text">Summary</span></a></li>
+            <button id="desktop-nav-collapse-toggle" class="desktop-nav-collapse-btn" aria-label="Collapse navigation" aria-expanded="true">&laquo;</button>            <ul>
+                <li><a href="/"><span class="nav-link-text">Home</span></a></li>
+                <li><a href="/stacey"><span class="nav-link-text">Stacey Matrix</span></a></li>
+                <li><a href="/cynefin"><span class="nav-link-text">Cynefin Framework</span></a></li>
+                <li><a href="/summary"><span class="nav-link-text">Summary</span></a></li>
             </ul>
         </nav>
     `;

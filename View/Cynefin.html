@@ -432,9 +432,7 @@
                 // infoElement.style.display = 'none'; // Element removed
                 // console.warn(`No description data found for domain: ${domain}`);
             }
-        }
-
-        function saveResults() {
+        }        async function saveResults() {
             if (typeof cynefinQuestionsData === 'undefined') {
                 alert("Error: Question data is not loaded. Cannot save results.");
                 return;
@@ -455,9 +453,58 @@
             };
             
             window.assessmentUtils.saveToLocalStorage(CYNEFIN_LOCAL_STORAGE_KEY, results);
-     
-            // Replace "summary.html" with the actual next page URL if different
-            window.location.href = "summary.html"; 
+
+            // Save to DB
+            const userId = localStorage.getItem('userId');
+            const projectName = localStorage.getItem('projectNameForAssessment'); // For context
+
+            if (userId && results.domain) {
+                let scoreValue = 0;
+                switch (results.domain.toLowerCase()) {
+                    case 'clear': scoreValue = 1; break;
+                    case 'complicated': scoreValue = 2; break;
+                    case 'complex': scoreValue = 3; break;
+                    case 'chaotic': scoreValue = 4; break;
+                    case 'disorder': scoreValue = 0; break;
+                    default: scoreValue = -1; // Unknown or unmapped
+                }
+
+                const assessmentPayload = {
+                    userId: userId,
+                    assessmentName: `Cynefin Framework - ${projectName || 'General'}`,
+                    score: scoreValue,
+                    // Consider adding a 'details' field in DB for:
+                    // details: JSON.stringify({ domain: results.domain, avgDecision: results.averageDecisionScore, avgCauseEffect: results.averageCauseEffectScore })
+                };                try {
+                    const response = await fetch('/api/assessments/cynefin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: assessmentPayload.userId,
+                            assessment: {
+                                domain: results.domain,
+                                decisionScore: results.averageDecisionScore,
+                                causeEffectScore: results.averageCauseEffectScore
+                            }
+                        })
+                    });                    const savedResult = await response.json();
+                    if (response.ok && savedResult.success) {
+                        console.log('Cynefin Framework results saved to DB:', savedResult);
+                    } else {
+                        console.error('Failed to save Cynefin Framework results to DB:', savedResult.message || response.statusText);
+                        alert('Failed to save Cynefin Framework results to the database. The summary will be based on local data.');
+                    }
+                } catch (error) {
+                    console.error('Error saving Cynefin Framework results to DB:', error);
+                    alert('Error saving Cynefin Framework results. Please check your connection. The summary will be based on local data.');
+                }
+            } else {
+                if (!userId) console.warn('User ID not found. Cynefin results not saved to DB.');
+                if (!results.domain) console.warn('No domain determined for Cynefin. Results not saved effectively to DB.');
+            }
+
+            // Proceed to summary page
+            window.location.href = "/summary";
         }
 
         function loadSavedData() {

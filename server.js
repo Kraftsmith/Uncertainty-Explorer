@@ -16,8 +16,40 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files from the current directory
-app.use(express.static(path.join(__dirname)));
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
+// Serve static files first
+app.use('/JavaScript', express.static(path.join(__dirname, 'JavaScript')));
+app.use('/Data', express.static(path.join(__dirname, 'Data')));
+app.use('/View', express.static(path.join(__dirname, 'View')));
+app.use(express.static(path.join(__dirname))); // For other root files like common-styles.css
+
+// Then HTML routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'View', 'index.html'));
+});
+
+app.get(['/stacey', '/stacey.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'View', 'stacey.html'));
+});
+
+app.get(['/cynefin', '/cynefin.html', '/Cynefin', '/Cynefin.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'View', 'Cynefin.html'));
+});
+
+app.get(['/summary', '/summary.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'View', 'summary.html'));
+});
+
+// Additional request logging for debugging (after routes)
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
 // Basic setup for multer to handle file uploads
 const storage = multer.memoryStorage();
@@ -26,20 +58,21 @@ const upload = multer({ storage: storage });
 // API Routes
 app.post('/api/users', async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
+        const { email, projectName } = req.body;
+        if (!email || !projectName) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Email is required' 
+                error: 'Email and project name are required' 
             });
         }
 
-        const user = await db.createUser(email);
+        const user = await db.createUser(email, projectName);
         res.json({ 
             success: true, 
             user: { 
                 id: user.id, 
-                email: user.email 
+                email: user.email,
+                project_name: user.project_name
             } 
         });
     } catch (error) {
@@ -51,16 +84,27 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
+// API Routes for assessments
 app.post('/api/assessments/stacey', async (req, res) => {
     try {
         const { userId, assessment } = req.body;
+        if (!userId || !assessment) {
+            return res.status(400).json({
+                success: false,
+                error: 'User ID and assessment data are required'
+            });
+        }
+
         const id = await db.saveStaceyAssessment(userId, assessment);
-        res.json({ success: true, assessmentId: id });
+        res.json({ 
+            success: true, 
+            id: id 
+        });
     } catch (error) {
         console.error('Error saving Stacey assessment:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Failed to save assessment' 
+        res.status(500).json({
+            success: false,
+            error: 'Failed to save assessment'
         });
     }
 });
@@ -91,23 +135,6 @@ app.get('/api/users/:userId/assessments', async (req, res) => {
             error: 'Failed to fetch assessments' 
         });
     }
-});
-
-// --- Routes to serve HTML pages ---
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'index.html'));
-});
-
-app.get('/stacey', (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'stacey.html'));
-});
-
-app.get('/cynefin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'Cynefin.html'));
-});
-
-app.get('/summary', (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'summary.html'));
 });
 
 // Start the server
