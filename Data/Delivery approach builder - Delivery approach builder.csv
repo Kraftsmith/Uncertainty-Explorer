@@ -1,0 +1,71 @@
+Practice,Stacy A,Stacy B,Meaning and desription
+Project plan,Simple,Complicated,"Comprehensive project plan serves as the foundational blueprint that guides the entire project from start to finish. 
+
+In a **predictive setting**, this plan is meticulously detailed and structured at the outset, with clearly defined phases, timelines, and deliverables. The goal is to minimize uncertainty by anticipating every aspect of the project, thereby allowing for strict adherence to the schedule and budget.
+
+In a **hybrid setting**, the project plan still serves as the central roadmap, but it incorporates elements of flexibility to adapt to changing conditions or new insights gained during execution. Hybrid approaches allow for iterative cycles or agile sprints within certain phases, enabling teams to respond to evolving requirements without losing sight of the project's ultimate objectives."
+Product roadmap,Complicated,Complex,"**Product Roadmap in Hybrid and Agile Settings: ""One Vision, Adaptable Paths""**
+In both hybrid and agile project management approaches, the product roadmap is a strategic tool that outlines the high-level vision and direction of the product. It serves as a living document that guides the development process while allowing for adaptability in response to changing customer needs and market conditions.
+In an **agile setting**, the roadmap is deliberately flexible, focusing on milestones and key deliverables rather than detailed task breakdowns. This approach prioritizes features and functionalities based on customer feedback and market demand, allowing the team to pivot quickly as new information emerges. The roadmap is continually refined, embracing changes as part of the agile philosophy.
+In a **hybrid setting**, the product roadmap still provides a clear vision and long-term direction, but it blends the adaptability of agile with the structure of more predictive approach. The roadmap emphasizes milestones and key deliverables, enabling the team to deliver incremental value while keeping the broader objectives in sight. This avoids the rigidity of detailed task breakdowns, ensuring that the plan can adapt to evolving requirements without losing focus on the overall vision."
+Project phases,Simple,Complicated,
+Project or phase verification(testing),Simple,Complicated,
+Strategic management through goals,Complicated,Complex,
+One or multiple increments each iteration,Complex,Complex,
+"Increment  is not strictly aligned to iterations, yet releases are regular. ",Complicated,Complicated,
+Iterations(Sprints) with incrment included,Complex,Complex,
+"Iterations, where increment is not required every iteration",Complicated,Complicated,
+Iteration(Sprint) planning,Complicated,Complicated,
+Product Backlog Refinement with focus on new ideas  and hypothesis,Complex,Complex,Focus on recent feedback and prioritizaion
+Product Backlog Refinement with focus adding details ,Complicated,Complicated,Focus on refining the intial ideas and adding details: descripitons and estimates
+Daily Standup,Complicated,Complicated,"Daily Standup is a brief, focused meeting where team members align on progress, share status and address obstacles, discussing what was done yesterday, plans for today, and any issues, with some focusing on structured milestones and others on iterative progress."
+Daily Scrum,Complex,Complex,Goal oriented  meeting: what have I done so that we as a team make progress towards the sprint goal?  What are my plans to make progress towards the goal? Do I have or see any Impediments?
+Regular status meeting,Simple,Complicated,
+Iteration(Sprint) retrospective every sprint,Complex,Complex,
+"Iteration(Sprint) retrospective on regular basis but  might be not every iteration, focus on lessons learned and analysis",Complicated,Complicated,
+Iteration(Sprint) review,Complex,Complex,
+Iteration demo,Complicated,Complicated,"Demonstration of the complete increment/deliverable to Product Owner and stakeholders, demo can be used to discuss further plans and official point of deliverable acceptance. "
+Single sprint goal,Complex,Complicated,Describes increment that needs to be produced within the sprint. 
+Multiple iteration goals,Complicated,Complicated,"Multiple Iteration Goals in a Hybrid Setting: ""Coordinating Parallel Progress Across Workstreams""
+In a hybrid project management setting, Multiple Iteration Goals help manage the complexity of balancing traditional and agile methods. These goals enable different teams to pursue parallel objectives that contribute to the overall project’s success.
+Coordinating Diverse Workstreams
+Different teams may follow varying methodologies—some with structured, technical milestones, others with agile, iterative goals. For instance, one team might aim to ""Complete backend API development,"" while another focuses on ""Refine user interface design through feedback."" Multiple Iteration Goals ensure that these efforts are aligned and progress in parallel.
+Aligning with Broader Phases
+Multiple goals also align with broader project phases, ensuring each team’s progress contributes to larger objectives. For example, goals like ""Design module architecture,"" ""Develop core functionalities,"" and ""Test and integrate systems"" advance specific aspects of the project in sync with overall milestones.
+Managing Dependencies
+With multiple goals, managing dependencies is key. Teams must coordinate to ensure their outputs integrate smoothly, avoiding conflicts or delays. Regular communication ensures that interconnected goals, like ""Complete API development"" and ""Implement UI enhancements,"" are met effectively.
+Driving Incremental Progress
+This approach drives incremental progress across various dimensions of the project, balancing flexibility with the structured discipline needed to achieve the project’s overall objectives.
+
+Multiple Iteration Goals in a hybrid setting enable parallel workstreams, align with broader project phases, and ensure coordinated progress toward the final product."
+Iteration goal,Complex,Complex,"Iteration Goal in Agile and Hybrid Settings: ""Clear Milestones for Incremental Progress""
+In both agile and hybrid settings, the Iteration Goal defines the expected state of the product increment by the end of a sprint or iteration. It provides a clear objective, ensuring the team is aligned and focused on delivering meaningful progress.
+Agile Setting
+The Iteration Goal is typically a customer-focused milestone, such as ""Complete the user authentication feature."" The team concentrates on delivering a functional, potentially shippable product increment by the end of the iteration.
+Hybrid Setting
+In a hybrid approach, the Iteration Goal balances structured planning with agile adaptability. It might represent an intermediate milestone like ""Complete development of the user interface"" or ""Finalize system integration,"" aligning with broader project phases while still allowing for iterative progress.
+
+In both contexts, the Iteration Goal provides direction, prioritizes work, and helps measure success, ensuring that each iteration moves the project closer to its final vision."
+Stabilization iteration,Complicated,Complicated,
+Risk management,Simple,Complicated,
+Release planning,Simple,Complicated,
+Quality control(testing) of all the WI within the iteration,Complex,Complex,
+Quality control(testing) of all the WIs  of previous iterations,Complicated,Complicated,
+Backlog - source of all work,Complicated,Complex,
+Project plan - the source of all work,Simple,Complicated,
+Change requests management,Simple,Complicated,
+Burn-down chart,Complicated,Complex,
+Estimation in relative units,Complex,Complicated,Relative estimation
+Estimation in time-based units,Simple,Complicated,Absolute units of estimation
+Definition of done,Complex,Complicated,
+Definition of ready,Complex,Complicated,
+Lessons learned register,Simple,Complicated,
+Lessons learned workshop,Simple,Complicated,
+Team empowerment and collective decition making,Complex,Complicated,
+"DevOps practice, regular releases",Complex,Complicated,
+"DevOps practice, frequent releases ",Complex,Complicated,
+Group of Individual contribures,Simple,Complicated,
+Team with common goals and mission,Complex,Complicated,
+Estimation of the whole story ,Complex,Complicated,
+Estimation of each piece and then sum togather,Simple,Complicated,
+Resource Management,Simple,Complicated,practices for efficient utilization and allocation of resources.

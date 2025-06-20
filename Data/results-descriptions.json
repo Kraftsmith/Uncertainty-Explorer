@@ -1,101 +1,13 @@
 {
-    "cynefin": {
-        "complex": {
-            "name": "COMPLEX",
-            "subtitle": "Unknown Unknowns",
-            "approach": "PROBE → SENSE → RESPOND",
-            "constraintCoupling": "Enabling Constrained / Loosely Coupled",
-            "practiceType": "EMERGENT PRACTICE",
-            "characteristics": [
-                "No clear right answers, emergent patterns",
-                "Unpredictable, requires experimentation",
-                "Solutions emerge over time"
-            ],
-            "steps": [
-                "Probe: Experiment with small, safe-to-fail tests.",
-                "Sense: Observe outcomes and detect patterns.",
-                "Respond: Amplify what works, adjust as needed."
-            ]
-        },
-        "complicated": {
-            "name": "COMPLICATED",
-            "subtitle": "Known Unknowns",
-            "approach": "SENSE → ANALYSE → RESPOND",
-            "constraintCoupling": "Governing Constrained / Tightly Coupled",
-            "practiceType": "GOOD PRACTICE",
-            "characteristics": [
-                "Multiple right answers possible",
-                "Requires expertise and analysis",
-                "Good practices (not rigid best practices)"
-            ],
-            "steps": [
-                "Sense: Investigate the problem with experts.",
-                "Analyse: Evaluate options (e.g., cost-benefit, feasibility).",
-                "Respond: Apply expert judgment to choose the best solution."
-            ]
-        },
-        "chaotic": {
-            "name": "CHAOTIC",
-            "subtitle": "Cause and Effect Unclear",
-            "approach": "ACT → SENSE → RESPOND",
-            "constraintCoupling": "Tightly Constrained / No Degrees of Freedom",
-            "practiceType": "NOVEL PRACTICE",
-            "characteristics": [
-                "High turbulence, no clear cause-and-effect",
-                "Immediate action required to stabilize",
-                "Novel practices needed"
-            ],
-            "steps": [
-                "Act: Take decisive action to regain control.",
-                "Sense: Look for patterns as the situation stabilizes.",
-                "Respond: Transition to a more structured domain (Complex/Complicated)."
-            ]
-        },
-        "clear": {
-            "name": "CLEAR",
-            "subtitle": "Known Knowns",
-            "approach": "SENSE → CATEGORISE → RESPOND",
-            "constraintCoupling": "Tightly Constrained / No Degrees of Freedom",
-            "practiceType": "BEST PRACTICE",
-            "characteristics": [
-                "Clear cause-and-effect relationships",
-                "Best practices are known and proven",
-                "Predictable, repeatable processes"
-            ],
-            "steps": [
-                "Sense: Gather data to confirm the situation fits known patterns.",
-                "Categorise: Apply established best practices.",
-                "Respond: Execute standard solutions efficiently."
-            ]
-        },
-        "disorder": {
-            "name": "DISORDER",
-            "subtitle": "Uncertainty about how to proceed",
-            "approach": "Break down, gather more data, avoid premature framing.",
-            "constraintCoupling": "N/A",
-            "practiceType": "N/A",
-            "characteristics": [
-                "Unclear which domain applies",
-                "Uncertainty about how to proceed"
-            ],
-            "steps": [
-                "Break down the problem into smaller parts and assign to appropriate domains.",
-                "Gather more data to clarify the context.",
-                "Avoid forcing a framework prematurely."
-            ]
-        }
-    },
     "combined": {
         "complicated_complicated": {
             "title": "Cynefin: Complicated & Stacey: Complicated",
-            "characteristics": [
-                "This domain is characterized by \"Known Unknowns.\"",
-                "The correct solutions are discoverable but require specialized knowledge and analysis.",
-                "Operates under \"governing constraints\" and is often \"tightly coupled,\" meaning there are rules and established ways of working that guide the analysis and response.",
-                "Uncertainties are \"known unknowns\" or moderate, making it possible and beneficial to invest in more detailed planning and analysis."
-            ],
-            "approach": "Leverage Expertise. Follow the Sense - Analyse - Respond cycle. Apply Good Practices.",
-            "steps": [
+            "overview": "This domain is characterized by \"Known Unknowns.\" The correct solutions are discoverable but require specialized knowledge and analysis. Operates under \"governing constraints\" and is often \"tightly coupled,\" meaning there are rules and established ways of working that guide the analysis and response. Uncertainties are \"known unknowns\" or moderate, making it possible and beneficial to invest in more detailed planning and analysis.",
+            "senseMakingCycle": {
+                "image": "sense-analyze-respond-cycle.svg",
+                "description": "Leverage Expertise. Follow the Sense - Analyse - Respond cycle. Apply Good Practices. Engage experts to investigate and understand the problem, analyze various options through expert evaluation, and respond with proven methods and solutions."
+            },
+            "practices": [
                 "Engage experts to investigate and understand the problem.",
                 "Sense: Gather data and investigate the problem with the help of experts.",
                 "Analyse: Evaluate various options and potential solutions (e.g., cost-benefit, feasibility, different approaches).",
@@ -106,32 +18,17 @@
                 "Structured Project Management: Traditional or more structured approaches can be effective as experts can define tasks and solutions.",
                 "Clear Definitions: Work towards clarifying requirements and technical solutions through expert consultation and analysis.",
                 "Maintain Clear Processes and Communication: Ensure well-defined processes for decision-making and clear communication channels."
-            ],
-            "deliveryPractices": [
-                "Product roadmap", "Project phases", "Strategic management through goals",
-                "Increment is not strictly aligned to iterations, yet releases are regular.",
-                "Iterations, where increment is not required every iteration", "Iteration(Sprint) planning",
-                "Product Backlog Refinement with focus adding details", "Daily Standup",
-                "Iteration(Sprint) retrospective on regular basis but might be not every iteration, focus on lessons learned and analysis",
-                "Iteration demo", "Multiple iteration goals", "Stabilization iteration",
-                "Quality control(testing) of all the WIs of previous iterations",
-                "Backlog - source of all work", "Burn-down chart",
-                "Estimation of each piece and then sum together"
             ]
         },
         "complex_complex": {
             "title": "Cynefin: Complex & Stacey: Complex",
-            "characteristics": [
-                "Embrace Experimentation and Emergence.",
-                "This domain is characterized by \"Unknown Unknowns\" in the Cynefin Framework and high levels of both business and technical uncertainty in the Stacey Matrix.",
-                "Clear-cut solutions are not readily available, and patterns emerge through experimentation."
-            ],
-            "approach": "Probe - Sense - Respond.",
-            "steps": [
-                "Probe: Conduct small, safe-to-fail experiments to explore the landscape and test hypotheses. This involves trying different approaches and observing the results.",
-                "Sense: Observe the outcomes of the experiments to detect patterns and insights. Focus on what emerges from the interactions and feedback.",
-                "Respond: Amplify what works, dampen what doesn't, and adapt the strategy based on the emergent patterns. Be prepared to adjust the course as new information comes to light.",
-                "Foster Emergent Practices: Rigidly applying \"best practices\" is ineffective. Focus on creating an environment that encourages innovation, learning, and adaptation.",
+            "overview": "Embrace Experimentation and Emergence. This domain is characterized by \"Unknown Unknowns\" in the Cynefin Framework and high levels of both business and technical uncertainty in the Stacey Matrix. Clear-cut solutions are not readily available, and patterns emerge through experimentation.",
+            "senseMakingCycle": {
+                "image": "CynefinComplexStacyComplex.svg",
+                "description": "Probe-Sense-Respond: Conduct small, safe-to-fail experiments to explore the landscape and test hypotheses. Observe the outcomes to detect patterns and insights, focusing on what emerges from interactions and feedback. Amplify what works, dampen what doesn't, and adapt the strategy based on emergent patterns. Be prepared to adjust course as new information comes to light."
+            },
+            "practices": [
+               "Foster Emergent Practices: Rigidly applying \"best practices\" is ineffective. Focus on creating an environment that encourages innovation, learning, and adaptation.",
                 "Enabling Constraints: Operate under \"enabling constraints\" and \"loosely coupled\" systems. Provide broad guidelines but allow for flexibility and autonomy.",
                 "Iterative Exploration: Favor iterative development, short feedback loops, and frequent adjustments. Increment delivery is driven by knowledge from iteration outcomes.",
                 "Continuous Learning: Prioritize continuous learning and knowledge sharing. Encourage experimentation and retrospective analysis.",
@@ -140,59 +37,80 @@
                 "Visualization and Transparency: Make processes and progress highly visible (e.g., Kanban boards, information radiators).",
                 "Experimentation Mindset: Cultivate a mindset of experimentation and learning from failure. Encourage testing new ideas.",
                 "Embrace Uncertainty: Acknowledge and navigate ambiguity rather than forcing premature clarity."
-            ],
-            "deliveryPractices": [
-                "Product roadmap", "Strategic management through goals", "One or multiple increments each iteration",
-                "Iterations (Sprints) with increment included", "Iteration(Sprint) planning",
-                "Product Backlog Refinement with focus on new ideas and hypothesis",
-                "Product Backlog Refinement with focus adding details", "Daily Scrum",
-                "Iteration(Sprint) retrospective every sprint", "Iteration(Sprint) review",
-                "Single sprint goal", "Iteration goal",
-                "Quality control(testing) of all the WI within the iteration",
-                "Backlog - source of all work", "Burn-down chart", "Estimation in relative units",
-                "Definition of done", "Definition of ready", "Team empowerment and collective decision making",
-                "DevOps practice, regular releases", "Team with common goals and mission",
-                "Estimation of the whole story"
             ]
         },
         "complicated_complex": {
             "title": "Cynefin: Complicated & Stacey: Complex",
-            "characteristics": [
-                "This domain combines known-unknowns with high uncertainty and complexity in implementation.",
-                "While the problem space may be analyzable, the solution space is highly emergent.",
-                "Technical implementation involves significant innovation and complexity.",
-                "Expert analysis helps understand the problem, but solution development requires experimentation.",
-                "A blend of structured analysis and adaptive implementation is needed."
-            ],
-            "approach": "Analyze the problem space with experts, then move to iterative experimentation for implementation.",
-            "steps": [
-                "Expert Analysis: Engage domain experts to analyze and understand the problem space thoroughly.",
-                "Problem Decomposition: Break down the complex problem into analyzable components where possible.",
-                "Adaptive Planning: Create a high-level plan but expect and plan for significant adaptation during implementation.",
-                "Technical Experimentation: Use safe-to-fail experiments for technical implementation.",
-                "Incremental Validation: Regularly validate both the problem understanding and technical approach.",
-                "Feedback Integration: Maintain strong feedback loops between expert analysis and implementation teams.",
-                "Risk Management: Balance between analytical risk assessment and experimental risk mitigation.",
-                "Knowledge Sharing: Foster strong collaboration between domain experts and technical teams.",
-                "Continuous Learning: Document and share both analytical insights and experimental outcomes."
-            ],
-            "deliveryPractices": [
-                "Product roadmap with regular revisions",
-                "Strategic management through goals with tactical flexibility",
-                "Incremental delivery with experimentation phases",
-                "Iterations with both planned and exploratory work",
-                "Detailed analysis sessions with domain experts",
-                "Technical spikes and proof-of-concepts",
-                "Regular backlog refinement with both business and technical focus",
-                "Daily synchronization meetings",
-                "Frequent retrospectives focused on both process and technical learning",
-                "Demo sessions with stakeholder feedback",
-                "Mixed planning approach - some items planned in detail, others left for discovery",
-                "Strong documentation of both business rules and technical findings",
-                "Comprehensive testing strategy with focus on technical risk areas",
-                "Backlog as a living document, regularly updated with new learnings",
-                "Mixed estimation approach - detailed for known items, relative for complex ones",
-                "Clear definition of done with emphasis on technical quality"
+            "overview": "Blend Expertise with Experimentation. This scenario combines the \"Known Unknowns\" of the Complicated domain with the high uncertainty of the Complex domain. While specialized knowledge is valuable, emergent patterns and experimentation are also essential. This hybrid context requires a balanced approach that leverages expertise but allows for iterative exploration.",
+            "senseMakingCycle": {
+                "image": "CynefinComplexStacyComplex.svg",
+                "description": "A Hybrid Approach: Adaptable. Initial Sense & Analysis: Start by gathering data and consulting with experts (Complicated). Iterative Probing: Conduct small, safe-to-fail experiments to explore uncertainties and discover emergent patterns (Complex). Continuous Sense: Observe the outcomes of these experiments and gather feedback to inform further decisions. Refined Analysis: Analyze new data and adjust strategies based on both expert insights and experimental findings. Adaptive Response: Respond with solutions informed by analysis and refined by experimentation. Be prepared to adapt the approach continuously."
+            },
+            "practices": [
+                "Hybrid Practices: A blend of good practices and emergent practices. Leverage expert knowledge where available, but also foster innovation and learning through experimentation.",
+                "Strategic Guidance: Leverage experts to set strategic direction and define high-level goals.",
+                "Iterative Development: Implement iterative development cycles with short feedback loops.",
+                "Safe-to-Fail Experiments: Encourage and enable safe-to-fail experiments to explore uncertainties.",
+                "Knowledge Sharing: Foster knowledge sharing between experts and experimentation teams.",
+                "Adaptive Planning: Use rolling wave planning or similar approaches that allow for flexibility.",
+                "Collaboration and Feedback: Promote strong collaboration and open communication within the team and with stakeholders.",
+                "Visualization and Transparency: Maintain transparency using visualization techniques to monitor progress.",
+                "Risk Assessment & Mitigation: Identify risks and uncertainties, and develop mitigation strategies based on both analysis and experimentation.",
+                "Continuous Improvement: Regularly evaluate both expert-driven solutions and experimental outcomes to refine the approach."
+            ]
+        },
+        "complex_complicated": {
+            "title": "Cynefin: Complex & Stacey: Complicated",
+            "overview": "Emergent Discovery with Analytical Foundation. High uncertainty in business context but manageable technical complexity. Solutions emerge through experimentation, but technical implementation follows established patterns. Innovation is needed in business approach, while technical solutions can leverage existing expertise.",
+            "senseMakingCycle": {
+                "image": "sense-analyze-respond-cycle.svg",
+                "description": "Probe - Sense - Respond with Expert Analysis for technical implementation. Experiment with business approaches and market solutions, observe market responses and user feedback, then apply expert knowledge to design technical solutions that support the emergent business patterns."
+            },
+            "practices": [
+                "Probe: Experiment with business approaches and market solutions to understand customer needs and value propositions.",
+                "Sense: Observe market responses and user feedback to identify emerging patterns.",
+                "Analyze: Apply expert knowledge to design technical solutions that support the emergent business patterns.",
+                "Respond: Implement solutions that combine innovative business approaches with proven technical practices.",
+                "Balance Innovation and Stability: Foster business innovation while maintaining technical reliability.",
+                "Expert-Guided Implementation: Use technical experts to ensure robust implementation of business experiments.",
+                "Iterative Business Development: Use short cycles to test business hypotheses while building on solid technical foundations.",
+                "Risk-Balanced Approach: Take calculated risks in business while minimizing technical risks."
+            ]
+        },
+        "clear_simple": {
+            "title": "Cynefin: Clear & Stacey: Simple",
+            "overview": "Best Practices and Predictable Solutions. Well-understood domain with established best practices. Low uncertainty in both business and technical aspects. Clear cause-and-effect relationships with predictable outcomes. Solutions are repeatable and scalable.",
+            "senseMakingCycle": {
+                "image": "sense-analyze-respond-cycle.svg",
+                "description": "Sense - Categorize - Respond with established best practices. Gather data to confirm the situation fits known patterns, apply proven frameworks that have worked in similar situations, and execute standard solutions efficiently and effectively."
+            },
+            "practices": [
+                "Sense: Gather data to confirm the situation fits known patterns and established categories.",
+                "Categorize: Apply proven frameworks and best practices that have worked in similar situations.",
+                "Respond: Execute standard solutions efficiently and effectively.",
+                "Optimize Efficiency: Focus on optimizing processes and reducing waste in well-understood workflows.",
+                "Standardize Processes: Implement consistent, repeatable processes across the organization.",
+                "Monitor and Maintain: Establish monitoring systems to ensure continued effectiveness.",
+                "Scale Successfully: Leverage proven solutions to scale operations predictably.",
+                "Continuous Improvement: Make incremental improvements to established processes."
+            ]
+        },
+        "complicated_simple": {
+            "title": "Cynefin: Complicated & Stacey: Simple",
+            "overview": "Expert Analysis with Straightforward Implementation. Complex problem requiring expert analysis but straightforward technical implementation. Multiple solutions exist, requiring expert judgment to choose the best approach. Technical execution is well-understood once the right solution is identified.",
+            "senseMakingCycle": {
+                "image": "sense-analyze-respond-cycle.svg",
+                "description": "Sense - Analyze - Respond with expert guidance and proven implementation. Engage experts to thoroughly investigate the complex problem space, evaluate multiple potential solutions using expert knowledge, and implement the chosen solution using established technical practices."
+            },
+            "practices": [
+                "Sense: Engage experts to thoroughly investigate and understand the complex problem space.",
+                "Analyze: Evaluate multiple potential solutions using expert knowledge and analytical frameworks.",
+                "Choose: Apply expert judgment to select the most appropriate solution for the context.",
+                "Respond: Implement the chosen solution using established technical practices.",
+                "Expert Consultation: Rely heavily on domain experts for problem analysis and solution selection.",
+                "Proven Implementation: Use well-established technical approaches for reliable execution.",
+                "Quality Assurance: Apply rigorous testing and validation processes.",
+                "Knowledge Documentation: Capture expert insights and decision rationale for future reference."
             ]
         }
     }
