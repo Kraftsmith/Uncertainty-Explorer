@@ -26,6 +26,8 @@ app.use((req, res, next) => {
 app.use('/JavaScript', express.static(path.join(__dirname, 'JavaScript')));
 app.use('/Data', express.static(path.join(__dirname, 'Data')));
 app.use('/View', express.static(path.join(__dirname, 'View')));
+app.use('/test', express.static(path.join(__dirname, 'test'))); // Serve test directory
+app.use('/Context', express.static(path.join(__dirname, 'Context'))); // Serve context directory
 app.use(express.static(path.join(__dirname))); // For other root files like common-styles.css
 
 // Then HTML routes
@@ -48,31 +50,31 @@ app.get(['/summary', '/summary.html'], (req, res) => {
 // Route for the Decision Making Table test page
 app.get(['/test', '/test.html', '/test-decision-matrix', '/test-decision-matrix.html'], (req, res) => {
     console.log('Test page requested:', req.url);
-    res.sendFile(path.join(__dirname, 'test-decision-matrix-complete.html'));
+    res.sendFile(path.join(__dirname, 'test', 'test-decision-matrix-complete.html'));
 });
 
 // Route for the debug table test page
 app.get(['/debug', '/debug.html', '/debug-table'], (req, res) => {
     console.log('Debug page requested:', req.url);
-    res.sendFile(path.join(__dirname, 'debug-table-test.html'));
+    res.sendFile(path.join(__dirname, 'test', 'debug-table-test.html'));
 });
 
 // Route for the quick table test page
 app.get(['/quick', '/quick.html', '/quick-test'], (req, res) => {
     console.log('Quick test page requested:', req.url);
-    res.sendFile(path.join(__dirname, 'quick-table-test.html'));
+    res.sendFile(path.join(__dirname, 'test', 'quick-table-test.html'));
 });
 
 // Route for simple table test
 app.get(['/simple', '/simple.html', '/simple-test'], (req, res) => {
     console.log('Simple test page requested:', req.url);
-    res.sendFile(path.join(__dirname, 'simple-table-test.html'));
+    res.sendFile(path.join(__dirname, 'test', 'simple-table-test.html'));
 });
 
 // Route for the deep debug page
 app.get(['/deep-debug', '/deep-debug.html'], (req, res) => {
     console.log('Deep debug page requested:', req.url);
-    res.sendFile(path.join(__dirname, 'deep-debug.html'));
+    res.sendFile(path.join(__dirname, 'test', 'deep-debug.html'));
 });
 
 // Debug route to check if server is working
