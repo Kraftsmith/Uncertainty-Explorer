@@ -28,23 +28,25 @@ app.use('/Data', express.static(path.join(__dirname, 'Data')));
 app.use('/View', express.static(path.join(__dirname, 'View')));
 app.use('/test', express.static(path.join(__dirname, 'test'))); // Serve test directory
 app.use('/Context', express.static(path.join(__dirname, 'Context'))); // Serve context directory
+app.use('/images', express.static(path.join(__dirname, 'images'))); // Serve images directory
+app.use(express.static(path.join(__dirname, 'View'))); // Set View as the primary static directory
 app.use(express.static(path.join(__dirname))); // For other root files like common-styles.css
 
 // Then HTML routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get(['/stacey', '/stacey.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'stacey.html'));
+    res.sendFile(path.join(__dirname, 'stacey.html'));
 });
 
 app.get(['/cynefin', '/cynefin.html', '/Cynefin', '/Cynefin.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'Cynefin.html'));
+    res.sendFile(path.join(__dirname, 'Cynefin.html'));
 });
 
 app.get(['/summary', '/summary.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'View', 'summary.html'));
+    res.sendFile(path.join(__dirname, 'summary.html'));
 });
 
 // Route for the Decision Making Table test page
