@@ -883,3 +883,147 @@ body.desktop-nav-collapsed .main-content-with-nav {
         max-height: 250px;
     }
 }
+
+/* Tabulator Integration Styles */
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-status {
+    font-size: 14px;
+    color: #6c757d;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 250px;
+}
+
+.btn-secondary, .btn-warning, .btn-primary {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        justify-content: center;
+    }
+    
+    .search-input {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* R8.9, R8.10, R8.11: Badge styles for approach columns */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 12px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* R8.9: Agile approach uses green badge */
+.badge-agile {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* R8.10: Hybrid approach uses yellow/amber badge */
+.badge-hybrid {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* R8.11: Predictive approach uses blue badge */
+.badge-predictive {
+    background-color: #cce5ff;
+    color: #004085;
+    border: 1px solid #b3d9ff;
+}
+
+/* R8.12: Implement horizontal scroll on mobile devices */
+@media (max-width: 768px) {
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        justify-content: center;
+        overflow-x: auto;
+    }
+    
+    .search-input {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Horizontal scroll for table on mobile */
+    .tabulator {
+        overflow-x: auto;
+    }
+}
+
+/* R8.13: Add row highlighting on hover (handled by Tabulator default) */
+.tabulator .tabulator-row:hover {
+    background-color: #f8f9fa !important;
+}

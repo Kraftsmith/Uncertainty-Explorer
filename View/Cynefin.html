@@ -404,7 +404,35 @@
                 // infoElement.style.display = 'none'; // Element removed
                 // console.warn(`No description data found for domain: ${domain}`);
             }
-        }        async function saveResults() {
+        }        
+
+        // Function to save test results to localStorage without navigation
+        function saveTestResults() {
+            if (typeof cynefinQuestionsData === 'undefined') {
+                console.error("Error: Question data is not loaded. Cannot save test results.");
+                return;
+            }
+            
+            const allScores = getAllQuestionScores();
+            const decisionScores = {};
+            const causeEffectScores = {};
+
+            (cynefinQuestionsData.decision || []).forEach(q => { decisionScores[q.text] = allScores[q.text] || 0; });
+            (cynefinQuestionsData.causeEffect || []).forEach(q => { causeEffectScores[q.text] = allScores[q.text] || 0; });
+
+            const results = {
+                allQuestionScores: allScores,
+                domain: document.getElementById('current-domain').textContent,
+                averageDecisionScore: parseFloat(document.getElementById('decision-score-avg').textContent),
+                averageCauseEffectScore: parseFloat(document.getElementById('cause-effect-score-avg').textContent),
+                timestamp: new Date().toISOString()
+            };
+            
+            window.assessmentUtils.saveToLocalStorage(CYNEFIN_LOCAL_STORAGE_KEY, results);
+            console.log("Test results saved to localStorage:", results);
+        }
+
+        async function saveResults() {
             if (typeof cynefinQuestionsData === 'undefined') {
                 alert("Error: Question data is not loaded. Cannot save results.");
                 return;
@@ -547,6 +575,9 @@
             });
 
             updateResults(); // Update the domain and UI based on new slider values
+            
+            // Auto-save the results to localStorage so other pages can use them
+            saveTestResults();
             console.log("Complex domain test values set. Current domain:", document.getElementById('current-domain').textContent);
         }
 
@@ -591,6 +622,9 @@
             });
 
             updateResults();
+            
+            // Auto-save the results to localStorage so other pages can use them
+            saveTestResults();
             console.log("Complicated domain test values set. Current domain:", document.getElementById('current-domain').textContent);
         }    </script>
     <script src="../Data/cynefin-data.js"></script>

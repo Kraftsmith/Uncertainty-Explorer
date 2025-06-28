@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Table Test</title>
+    <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>Simple Table Initialization Test</h1>
+    <div id="status">Loading...</div>
+    <div id="simple-table-container"></div>
+    
+    <script src="Data/delivery-practices.js"></script>
+    <script src="JavaScript/delivery-practices-table.js"></script>
+    
+    <script>
+        function updateStatus(msg, type = 'warning') {
+            const status = document.getElementById('status');
+            status.textContent = msg;
+            status.className = `status ${type}`;
+            console.log(msg);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('Starting simple test...');
+            
+            setTimeout(() => {
+                updateStatus('Creating table...');
+                
+                try {
+                    const table = new DeliveryPracticesTable('simple-table-container');
+                    updateStatus('Table instance created, calling init...');
+                    
+                    table.init();
+                    updateStatus('Init called, waiting for table to be ready...');
+                    
+                    // Simple check every second
+                    let count = 0;
+                    const interval = setInterval(() => {
+                        count++;
+                        console.log(`Check ${count}: tableReady = ${table.tableReady}`);
+                        
+                        if (table.tableReady) {
+                            updateStatus('✅ Table is ready!', 'success');
+                            clearInterval(interval);
+                            
+                            // Run a simple test
+                            localStorage.setItem('staceyMatrixResults', JSON.stringify({area: 'Complex'}));
+                            localStorage.setItem('cynefinFrameworkAssessmentResults_v3', JSON.stringify({domain: 'Complex'}));
+                            
+                            table.applyAssessmentFilters();
+                            updateStatus('✅ Table ready and filter applied!', 'success');
+                            
+                        } else if (count >= 30) {
+                            updateStatus('❌ Table not ready after 30 seconds', 'error');
+                            clearInterval(interval);
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    updateStatus(`❌ Error: ${error.message}`, 'error');
+                    console.error(error);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

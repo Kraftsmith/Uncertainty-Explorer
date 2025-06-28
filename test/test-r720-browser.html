@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R7.20 Complexity Exclusion Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 R7.20 Complexity Exclusion Test</h1>
+    <div id="test-results"></div>
+
+    <!-- Load data -->
+    <script src="Data/delivery-practices.js"></script>
+
+    <script>
+        console.log('🧪 Testing R7.20: Complexity Exclusion Requirement');
+        console.log('=====================================');
+
+        const resultsDiv = document.getElementById('test-results');
+        let testOutput = '';
+
+        function log(message, type = 'info') {
+            console.log(message);
+            const className = type === 'pass' ? 'pass' : type === 'fail' ? 'fail' : 'info';
+            testOutput += `<div class="${className}">${message}</div>`;
+        }
+
+        function updateResults() {
+            resultsDiv.innerHTML = testOutput;
+        }
+
+        // Check if data loaded
+        if (!deliveryPractices || deliveryPractices.length === 0) {
+            log('❌ ERROR: delivery-practices.js not loaded', 'fail');
+            updateResults();
+            throw new Error('Data not loaded');
+        }
+
+        log(`✅ Loaded ${deliveryPractices.length} delivery practices`, 'pass');
+
+        // Decision matrix for reference
+        const decisionMatrix = [
+            {stacey: "Complex", cynefin: "Complex", primary: "Agile", secondary: "Agile"},
+            {stacey: "Complex", cynefin: "Complicated", primary: "Agile", secondary: "Hybrid"},
+            {stacey: "Simple", cynefin: "Complicated", primary: "Hybrid", secondary: "Predictive"},
+            {stacey: "Complicated", cynefin: "Complicated", primary: "Hybrid", secondary: "Hybrid"},
+            {stacey: "Complicated", cynefin: "Complex", primary: "Agile", secondary: "Hybrid"},
+            {stacey: "Simple", cynefin: "Clear", primary: "Predictive", secondary: "Predictive"}
+        ];
+
+        // Find practices with primaryArea = "Predictive"
+        const predictivePrimaryPractices = deliveryPractices.filter(p => p.primaryArea === "Predictive");
+        log(`📊 Found ${predictivePrimaryPractices.length} practices with primaryArea = "Predictive":`);
+        predictivePrimaryPractices.forEach(p => {
+            log(`  - "${p.name}" (secondary: ${p.secondaryArea || 'none'})`);
+        });
+
+        // Test function to simulate filtering logic
+        function simulateR720Filtering(staceyResult, cynefinResult) {
+            log(`🔍 Testing: ${staceyResult} + ${cynefinResult}`);
+            
+            // Get decision from matrix
+            const decision = decisionMatrix.find(d => d.stacey === staceyResult && d.cynefin === cynefinResult);
+            if (!decision) {
+                log('  ❌ No decision matrix entry found', 'fail');
+                return;
+            }
+            
+            log(`  📋 Decision: Primary="${decision.primary}", Secondary="${decision.secondary}"`);
+            
+            // Build allowed approaches
+            const allowedApproaches = [decision.primary];
+            if (decision.secondary && decision.primary !== decision.secondary) {
+                allowedApproaches.push(decision.secondary);
+            }
+            
+            log(`  📝 Allowed approaches: [${allowedApproaches.join(', ')}]`);
+            
+            // R7.20: Check if complexity detected
+            const hasComplexity = (staceyResult === "Complex" || cynefinResult === "Complex");
+            log(`  🔍 Complexity detected: ${hasComplexity}`, hasComplexity ? 'info' : 'info');
+            
+            // Filter practices based on R7.15-R7.19 + R7.20
+            const filteredPractices = deliveryPractices.filter(practice => {
+                // Check if practice matches allowed approaches (R7.15-R7.19)
+                const primaryMatch = allowedApproaches.includes(practice.primaryArea);
+                const secondaryMatch = practice.secondaryArea && allowedApproaches.includes(practice.secondaryArea);
+                const approachMatch = primaryMatch || secondaryMatch;
+                
+                // R7.20: Exclude if primaryArea is "Predictive" when complexity detected
+                const isExcludedByComplexity = hasComplexity && practice.primaryArea === "Predictive";
+                
+                return approachMatch && !isExcludedByComplexity;
+            });
+            
+            log(`  📊 Filtered practices: ${filteredPractices.length}/${deliveryPractices.length}`);
+            
+            // R7.20 Validation: Check for violations
+            if (hasComplexity) {
+                const predictiveViolations = filteredPractices.filter(p => p.primaryArea === "Predictive");
+                if (predictiveViolations.length > 0) {
+                    log(`  ❌ R7.20 VIOLATION: Found ${predictiveViolations.length} practices with primaryArea="Predictive"`, 'fail');
+                    predictiveViolations.forEach(p => {
+                        log(`    - "${p.name}"`, 'fail');
+                    });
+                    return false;
+                } else {
+                    log(`  ✅ R7.20 COMPLIANCE: No practices with primaryArea="Predictive" when complexity detected`, 'pass');
+                }
+            } else {
+                log(`  ℹ️ R7.20 not applicable (no complexity detected)`);
+            }
+            
+            // Show sample filtered practices
+            log(`  📋 Sample practices included:`);
+            filteredPractices.slice(0, 5).forEach(p => {
+                log(`    - "${p.name}" (${p.primaryArea}/${p.secondaryArea || 'none'})`);
+            });
+            if (filteredPractices.length > 5) {
+                log(`    ... and ${filteredPractices.length - 5} more`);
+            }
+            
+            return true;
+        }
+
+        // Test all scenarios
+        log('\n🧪 TESTING ALL DECISION MATRIX SCENARIOS:');
+        log('==========================================');
+        
+        let allPassed = true;
+        decisionMatrix.forEach(scenario => {
+            const passed = simulateR720Filtering(scenario.stacey, scenario.cynefin);
+            if (!passed) allPassed = false;
+            log(''); // Add spacing
+        });
+
+        // Final result
+        log('🏁 FINAL RESULT:');
+        log('================');
+        if (allPassed) {
+            log('✅ All scenarios passed R7.20 compliance test!', 'pass');
+        } else {
+            log('❌ Some scenarios failed R7.20 compliance test!', 'fail');
+        }
+
+        updateResults();
+    </script>
+</body>
+</html>

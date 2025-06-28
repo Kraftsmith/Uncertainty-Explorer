@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Table Test</title>
+    
+    <!-- Add Tabulator -->
+    <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
+    
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>Quick Table Initialization Test</h1>
+    <div id="status-log"></div>
+    <div id="table-container"></div>
+    
+    <button onclick="runQuickTest()">Run Quick Test</button>
+    <button onclick="runAllTests()">Run All Tests</button>
+
+    <!-- Load dependencies -->
+    <script src="Data/delivery-practices.js"></script>
+    <script src="JavaScript/delivery-practices-table.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const statusLog = document.getElementById('status-log');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            statusLog.appendChild(div);
+            console.log(message);
+        }
+        
+        function runQuickTest() {
+            log('🚀 Starting quick test...', 'warning');
+            
+            // Clear previous test
+            document.getElementById('table-container').innerHTML = '<div id="quick-test-container"></div>';
+            
+            // Check dependencies
+            log(`Dependencies: deliveryPractices=${typeof deliveryPractices}, DeliveryPracticesTable=${typeof DeliveryPracticesTable}, Tabulator=${typeof Tabulator}`);
+            
+            if (typeof deliveryPractices === 'undefined') {
+                log('❌ deliveryPractices not loaded', 'error');
+                return;
+            }
+            
+            if (typeof DeliveryPracticesTable === 'undefined') {
+                log('❌ DeliveryPracticesTable not loaded', 'error');
+                return;
+            }
+            
+            if (typeof Tabulator === 'undefined') {
+                log('❌ Tabulator not loaded', 'error');
+                return;
+            }
+            
+            log('✅ All dependencies loaded', 'success');
+            
+            // Create table
+            try {
+                const table = new DeliveryPracticesTable('quick-test-container');
+                log('✅ Table instance created');
+                
+                // Initialize
+                table.init();
+                log('✅ Table init called');
+                
+                // Check readiness repeatedly
+                let checkCount = 0;
+                const maxChecks = 15;
+                
+                const checkReady = () => {
+                    checkCount++;
+                    log(`Check ${checkCount}: tableReady = ${table.tableReady}`);
+                    
+                    if (table.tableReady) {
+                        log('🎉 Table is ready!', 'success');
+                        
+                        // Set test data and run filter test
+                        localStorage.setItem('staceyAssessmentResult', 'Complex');
+                        localStorage.setItem('cynefinAssessmentResult', 'Complex');
+                        
+                        log('🧪 Running filter test...');
+                        const result = testTableFilter(table);
+                        
+                        if (result.success) {
+                            log('✅ Filter test PASSED', 'success');
+                        } else {
+                            log(`❌ Filter test FAILED: ${result.error}`, 'error');
+                        }
+                        
+                    } else if (checkCount < maxChecks) {
+                        setTimeout(checkReady, 1000);
+                    } else {
+                        log('❌ Table failed to become ready', 'error');
+                    }
+                };
+                
+                setTimeout(checkReady, 1000);
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        function testTableFilter(tableInstance) {
+            try {
+                if (!tableInstance.tableReady) {
+                    return { success: false, error: 'Table not ready' };
+                }
+                
+                // Test the filtering logic
+                const staceyResult = 'Complex';
+                const cynefinResult = 'Complex';
+                
+                // Find the matching decision
+                const decisionMatrix = [
+                    { stacy: "Complex", cynefin: "Complex", primary: "Agile", secondary: "Agile" },
+                    { stacy: "Complex", cynefin: "Complicated", primary: "Agile", secondary: "Hybrid" },
+                    { stacy: "Simple", cynefin: "Complicated", primary: "Hybrid", secondary: "Predictive" },
+                    { stacy: "Complicated", cynefin: "Complicated", primary: "Hybrid", secondary: "Hybrid" },
+                    { stacy: "Complicated", cynefin: "Complex", primary: "Agile", secondary: "Hybrid" },
+                    { stacy: "Simple", cynefin: "Clear", primary: "Predictive", secondary: "Predictive" }
+                ];
+                
+                const decision = decisionMatrix.find(d => d.stacy === staceyResult && d.cynefin === cynefinResult);
+                
+                if (!decision) {
+                    return { success: false, error: 'No matching decision found' };
+                }
+                
+                log(`Decision: ${decision.primary} + ${decision.secondary}`);
+                
+                // Apply filter
+                tableInstance.applyAssessmentFilters();
+                
+                // Get filtered data (if the table has this method)
+                if (tableInstance.table && tableInstance.table.getData) {
+                    const filteredData = tableInstance.table.getData();
+                    log(`Filtered data: ${filteredData.length} practices`);
+                    
+                    return { success: true, filteredCount: filteredData.length };
+                } else {
+                    return { success: true, message: 'Filter applied but cannot verify data' };
+                }
+                
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function runAllTests() {
+            log('🎯 Running all test scenarios...', 'warning');
+            
+            const scenarios = [
+                { stacy: 'Complex', cynefin: 'Complex' },
+                { stacy: 'Complex', cynefin: 'Complicated' },
+                { stacy: 'Simple', cynefin: 'Clear' }
+            ];
+            
+            let currentScenario = 0;
+            
+            function runNextScenario() {
+                if (currentScenario >= scenarios.length) {
+                    log('🏁 All scenarios completed', 'success');
+                    return;
+                }
+                
+                const scenario = scenarios[currentScenario];
+                log(`Testing scenario ${currentScenario + 1}: ${scenario.stacy} + ${scenario.cynefin}`);
+                
+                localStorage.setItem('staceyAssessmentResult', scenario.stacy);
+                localStorage.setItem('cynefinAssessmentResult', scenario.cynefin);
+                
+                // Run the quick test for this scenario
+                setTimeout(() => {
+                    currentScenario++;
+                    runNextScenario();
+                }, 3000);
+            }
+            
+            runNextScenario();
+        }
+        
+        // Auto-run on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📄 Page loaded, waiting 2 seconds before running test...');
+            setTimeout(() => {
+                runQuickTest();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

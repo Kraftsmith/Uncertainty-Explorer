@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Change Requests Management</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        .debug-controls button { margin: 5px; padding: 8px 15px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .info { color: blue; }
+        #debug-results { background: #f9f9f9; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+        #practices-table { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug: Change Requests Management for Complex + Complex</h1>
+    
+    <div class="debug-section">
+        <h2>Debug Controls</h2>
+        <div class="debug-controls">
+            <button onclick="setComplexComplexData()">Set Complex + Complex Data</button>
+            <button onclick="checkLocalStorage()">Check localStorage</button>
+            <button onclick="initializeTable()">Initialize Table</button>
+            <button onclick="debugFiltering()">Debug Filtering Logic</button>
+            <button onclick="clearLocalStorage()">Clear localStorage</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Debug Results</h2>
+        <div id="debug-results"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Delivery Practices Table</h2>
+        <div id="practices-table"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+    <script src="Data/delivery-practices.js"></script>
+    <script src="JavaScript/delivery-practices-table.js"></script>
+
+    <script>
+        let practicesTable;
+        const resultsDiv = document.getElementById('debug-results');
+        let debugOutput = '';
+
+        function log(message, type = 'info') {
+            console.log(message);
+            const className = type === 'pass' ? 'pass' : type === 'fail' ? 'fail' : 'info';
+            debugOutput += `<div class="${className}">${message}</div>`;
+            updateResults();
+        }
+
+        function updateResults() {
+            resultsDiv.innerHTML = debugOutput;
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            debugOutput = '';
+            updateResults();
+        }
+
+        function setComplexComplexData() {
+            log('🔧 Setting Complex + Complex localStorage data...');
+            
+            // Set Stacey data (as expected by implementation)
+            const staceyData = {
+                area: "Complex",
+                product: { average: 4.5 },
+                technical: { average: 4.2 },
+                team: { average: 4.8 },
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('staceyMatrixResults', JSON.stringify(staceyData));
+            log(`✅ Set staceyMatrixResults: ${JSON.stringify(staceyData)}`);
+            
+            // Set Cynefin data (as expected by implementation)
+            const cynefinData = {
+                domain: "Complex",
+                allQuestionScores: [4, 5, 4, 5, 4],
+                averageDecisionScore: 4.4,
+                averageCauseEffectScore: 4.2,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('cynefinFrameworkAssessmentResults_v3', JSON.stringify(cynefinData));
+            log(`✅ Set cynefinFrameworkAssessmentResults_v3: ${JSON.stringify(cynefinData)}`);
+            
+            log('🎯 Ready to test Complex + Complex scenario');
+        }
+
+        function checkLocalStorage() {
+            log('🔍 Checking localStorage data...');
+            
+            // Check Stacey
+            const staceyRaw = localStorage.getItem('staceyMatrixResults');
+            if (staceyRaw) {
+                try {
+                    const staceyData = JSON.parse(staceyRaw);
+                    log(`📊 Stacey data: ${JSON.stringify(staceyData)}`);
+                    log(`📊 Stacey area: ${staceyData.area}`);
+                } catch (e) {
+                    log(`❌ Error parsing Stacey data: ${e.message}`, 'fail');
+                }
+            } else {
+                log('❌ No Stacey data found', 'fail');
+            }
+            
+            // Check Cynefin
+            const cynefinRaw = localStorage.getItem('cynefinFrameworkAssessmentResults_v3');
+            if (cynefinRaw) {
+                try {
+                    const cynefinData = JSON.parse(cynefinRaw);
+                    log(`📊 Cynefin data: ${JSON.stringify(cynefinData)}`);
+                    log(`📊 Cynefin domain: ${cynefinData.domain}`);
+                } catch (e) {
+                    log(`❌ Error parsing Cynefin data: ${e.message}`, 'fail');
+                }
+            } else {
+                log('❌ No Cynefin data found', 'fail');
+            }
+        }
+
+        function initializeTable() {
+            log('🔧 Initializing delivery practices table...');
+            
+            if (practicesTable) {
+                practicesTable.table.destroy();
+                log('🗑️ Destroyed existing table');
+            }
+            
+            practicesTable = new DeliveryPracticesTable('practices-table');
+            practicesTable.init();
+            log('✅ Table initialized');
+        }
+
+        function debugFiltering() {
+            log('🔍 Debugging filtering logic...');
+            
+            if (!practicesTable) {
+                log('❌ Table not initialized', 'fail');
+                return;
+            }
+            
+            // Check what the table thinks the assessment results are
+            const staceyResult = practicesTable.getStaceyResult();
+            const cynefinResult = practicesTable.getCynefinResult();
+            
+            log(`📊 Table sees - Stacey: ${staceyResult}, Cynefin: ${cynefinResult}`);
+            
+            // Check complexity detection
+            const hasComplexity = (staceyResult === "Complex" || cynefinResult === "Complex");
+            log(`🔍 Complexity detected: ${hasComplexity}`);
+            
+            // Find "Change requests management"
+            const changeRequestsPractice = deliveryPractices.find(p => p.name === "Change requests management");
+            if (changeRequestsPractice) {
+                log(`📋 Found "Change requests management": ${changeRequestsPractice.primaryArea}/${changeRequestsPractice.secondaryArea}`);
+                
+                // Check if it should be excluded by R7.20
+                const shouldBeExcludedByR720 = hasComplexity && changeRequestsPractice.primaryArea === "Predictive";
+                log(`🎯 Should be excluded by R7.20: ${shouldBeExcludedByR720}`, shouldBeExcludedByR720 ? 'pass' : 'fail');
+            }
+            
+            // Check current filtered data
+            if (practicesTable.table) {
+                const filteredData = practicesTable.table.getData();
+                log(`📊 Current filtered practices: ${filteredData.length}/${deliveryPractices.length}`);
+                
+                // Check if "Change requests management" is in filtered data
+                const changeRequestsInFiltered = filteredData.find(p => p.name === "Change requests management");
+                if (changeRequestsInFiltered) {
+                    log(`❌ VIOLATION: "Change requests management" is in filtered data!`, 'fail');
+                } else {
+                    log(`✅ CORRECT: "Change requests management" is excluded from filtered data`, 'pass');
+                }
+                
+                // Show predictive practices in filtered data
+                const predictiveInFiltered = filteredData.filter(p => p.primaryArea === "Predictive");
+                if (predictiveInFiltered.length > 0) {
+                    log(`❌ VIOLATION: Found ${predictiveInFiltered.length} predictive practices in filtered data:`, 'fail');
+                    predictiveInFiltered.forEach(p => {
+                        log(`  - "${p.name}" (${p.primaryArea}/${p.secondaryArea})`, 'fail');
+                    });
+                } else {
+                    log(`✅ CORRECT: No predictive practices in filtered data`, 'pass');
+                }
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem('staceyMatrixResults');
+            localStorage.removeItem('cynefinFrameworkAssessmentResults_v3');
+            log('🗑️ Cleared localStorage');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('🔍 Debug page initialized');
+            log('Click "Set Complex + Complex Data" then "Initialize Table" to test');
+        });
+    </script>
+</body>
+</html>

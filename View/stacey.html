@@ -231,48 +231,9 @@
                 mainNextButton.addEventListener('click', async () => {
                     staceyComponent.saveResults(false);
 
-                    const staceyData = assessmentUtils.loadFromLocalStorage(STACEY_LOCAL_STORAGE_KEY);
-                    const userId = localStorage.getItem('userId');
-
-                    if (staceyData && userId) {
-                        const assessment = {
-                            productScore: staceyData.product.average,
-                            technicalScore: staceyData.technical.average,
-                            teamScore: staceyData.team.average,
-                            area: staceyData.area
-                        };
-
-                        try {
-                            const response = await fetch('/api/assessments/stacey', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId, assessment })
-                            });
-
-                            if (!response.ok) {
-                                throw new Error(`Server returned status ${response.status}`);
-                            }
-
-                            const result = await response.json();
-                            if (!result.success) {
-                                throw new Error(result.error || 'Failed to save assessment');
-                            }
-
-                            console.log('Stacey Matrix results saved to DB:', result);
-                            if (staceyComponent.options.redirectUrlOnSave) {
-                                window.location.href = staceyComponent.options.redirectUrlOnSave;
-                            }
-                        } catch (error) {
-                            console.error('Error saving Stacey assessment:', error);
-                            alert('There was a problem saving your assessment. Your results are saved locally and you can continue.');
-                            if (staceyComponent.options.redirectUrlOnSave) {
-                                window.location.href = staceyComponent.options.redirectUrlOnSave;
-                            }
-                        }
-                    } else {
-                        console.warn('Missing data - userId:', userId, 'staceyData:', !!staceyData);
-                        alert('Session or assessment data not found. Please try again from the home page.');
-                        window.location.href = '/';
+                    // Just redirect
+                    if (staceyComponent.options.redirectUrlOnSave) {
+                        window.location.href = staceyComponent.options.redirectUrlOnSave;
                     }
                 });
             }

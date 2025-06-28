@@ -66,9 +66,16 @@ const assessmentUtils = {
     loadFromLocalStorage: function(key) {
         try {
             const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : null;
+            if (data) {
+                const parsed = JSON.parse(data);
+                console.log(`Loaded from localStorage: ${key}`, parsed); // Add this line
+                return parsed;
+            } else {
+                console.warn(`No data found in localStorage for key: ${key}`); // Add this line
+                return null;
+            }
         } catch (e) {
-            console.error("Error loading from local storage:", e);
+            console.error(`Error loading from localStorage for key: ${key}`, e);
             return null;
         }
     },

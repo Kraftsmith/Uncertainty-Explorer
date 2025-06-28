@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Mode Test - Decision Matrix</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+    <script src="Data/delivery-practices.js"></script>
+    <script src="JavaScript/delivery-practices-table.js"></script>
+    <style>
+        .filter-mode-controls {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .filter-mode-controls h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .test-controls button {
+            padding: 10px 15px;
+            border: 1px solid #007acc;
+            background: #007acc;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .test-controls button:hover {
+            background: #005a9e;
+        }
+        .test-controls button.secondary {
+            background: #6c757d;
+            border-color: #6c757d;
+        }
+        .test-controls button.secondary:hover {
+            background: #545b62;
+        }
+        .mode-indicator {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .mode-standard {
+            background: #d4edda;
+            color: #155724;
+        }
+        .mode-strict {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .results-summary {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Filter Mode Test - Decision Matrix</h1>
+        
+        <div class="filter-mode-controls">
+            <h3>Filter Mode Selection</h3>
+            <p>Test both filtering modes to see how they handle Predictive practices with Hybrid secondary areas.</p>
+            
+            <div class="mode-indicator" id="current-mode">Mode: Standard (Requirements-compliant)</div>
+            
+            <div class="test-controls">
+                <button onclick="switchToStandardMode()">Standard Mode</button>
+                <button onclick="switchToStrictMode()">Strict Mode</button>
+                <button onclick="setComplexComplicatedData()" class="secondary">Set Complex + Complicated</button>
+                <button onclick="clearAssessmentData()" class="secondary">Clear Assessment Data</button>
+                <button onclick="runAnalysis()" class="secondary">Analyze Results</button>
+            </div>
+        </div>
+
+        <div id="results-summary" class="results-summary" style="display: none;"></div>
+
+        <div id="delivery-practices-container"></div>
+    </div>
+
+    <script>
+        let practicesTable = null;
+        let currentStrictMode = false;
+
+        function initializeTable(strictMode = false) {
+            // Clear existing table
+            const container = document.getElementById('delivery-practices-container');
+            container.innerHTML = '';
+            
+            // Create new table with the specified mode
+            practicesTable = new DeliveryPracticesTable('delivery-practices-container', {
+                strictFiltering: strictMode
+            });
+            practicesTable.init();
+            
+            currentStrictMode = strictMode;
+            updateModeIndicator();
+            
+            // Apply filters after a short delay to ensure table is ready
+            setTimeout(() => {
+                if (practicesTable && practicesTable.tableReady) {
+                    practicesTable.applyAssessmentFilters();
+                }
+            }, 1000);
+        }
+
+        function switchToStandardMode() {
+            console.log('Switching to Standard Mode');
+            initializeTable(false);
+        }
+
+        function switchToStrictMode() {
+            console.log('Switching to Strict Mode');
+            initializeTable(true);
+        }
+
+        function updateModeIndicator() {
+            const indicator = document.getElementById('current-mode');
+            if (currentStrictMode) {
+                indicator.textContent = 'Mode: Strict (Excludes ALL Predictive practices)';
+                indicator.className = 'mode-indicator mode-strict';
+            } else {
+                indicator.textContent = 'Mode: Standard (Requirements-compliant)';
+                indicator.className = 'mode-indicator mode-standard';
+            }
+        }
+
+        function setComplexComplicatedData() {
+            localStorage.setItem('stacey-assessment-result', 'Complex');
+            localStorage.setItem('cynefin-assessment-result', 'Complicated');
+            console.log('Set assessment data: Complex + Complicated');
+            
+            // Reapply filters
+            if (practicesTable && practicesTable.tableReady) {
+                practicesTable.applyAssessmentFilters();
+            }
+        }
+
+        function clearAssessmentData() {
+            localStorage.removeItem('stacey-assessment-result');
+            localStorage.removeItem('cynefin-assessment-result');
+            console.log('Cleared assessment data');
+            
+            // Reapply filters
+            if (practicesTable && practicesTable.tableReady) {
+                practicesTable.applyAssessmentFilters();
+            }
+        }
+
+        function runAnalysis() {
+            if (!practicesTable || !practicesTable.tableReady) {
+                alert('Table not ready. Please wait a moment and try again.');
+                return;
+            }
+
+            const stacey = localStorage.getItem('stacey-assessment-result');
+            const cynefin = localStorage.getItem('cynefin-assessment-result');
+            
+            let analysis = '';
+            
+            if (!stacey || !cynefin) {
+                analysis = 'No assessment data found. Table shows all practices.';
+            } else {
+                const filteredData = practicesTable.table.getData();
+                
+                // Categorize practices
+                const agile = filteredData.filter(p => p.primaryArea === 'Agile' || p.secondaryArea === 'Agile');
+                const hybrid = filteredData.filter(p => p.primaryArea === 'Hybrid' || p.secondaryArea === 'Hybrid');
+                const predictive = filteredData.filter(p => p.primaryArea === 'Predictive' || p.secondaryArea === 'Predictive');
+                
+                analysis = `Assessment: ${stacey} + ${cynefin}
+Filter Mode: ${currentStrictMode ? 'STRICT' : 'STANDARD'}
+
+Results:
+- Total practices shown: ${filteredData.length}
+- Agile practices: ${agile.length}
+- Hybrid practices: ${hybrid.length}
+- Predictive practices: ${predictive.length}
+
+${stacey === 'Complex' && cynefin === 'Complicated' ? 
+  (predictive.length > 0 ? 
+    `❌ ISSUE: ${predictive.length} Predictive practices found for Complex + Complicated` :
+    `✅ SUCCESS: No Predictive practices for Complex + Complicated`) :
+  ''
+}`;
+
+                if (predictive.length > 0 && stacey === 'Complex' && cynefin === 'Complicated') {
+                    analysis += '\n\nProblematic practices:';
+                    predictive.forEach((practice, index) => {
+                        analysis += `\n${index + 1}. "${practice.name}" (Primary: ${practice.primaryArea}, Secondary: ${practice.secondaryArea})`;
+                    });
+                }
+            }
+            
+            const resultsDiv = document.getElementById('results-summary');
+            resultsDiv.textContent = analysis;
+            resultsDiv.style.display = 'block';
+            
+            console.log(analysis);
+        }
+
+        // Initialize with standard mode
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTable(false);
+        });
+    </script>
+</body>
+</html>

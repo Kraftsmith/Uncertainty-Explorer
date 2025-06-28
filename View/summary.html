@@ -7,6 +7,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.1/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Add Tabulator -->
+    <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
+    
     <link rel="stylesheet" href="../common-styles.css">
     <style>
         /* Page-specific styles for Summary */
@@ -219,6 +224,7 @@
                 </div>
                 
 
+
             </div>              <div class="domain-info" id="domain-info-display" style="display: none;">
                 <h3 id="domain-title"></h3>
                 <div class="domain-overview">
@@ -237,98 +243,20 @@
                     <ul id="domain-practices-list"></ul>
                 </div><div id="delivery-practices-section" style="display: none;">
                     <h4>Delivery Framework</h4>
-                    <div class="table-controls">
-                        <div class="search-controls">
-                            <input type="text" id="global-search" placeholder="Search all columns..." class="search-input">
-                            <button id="clear-filters" class="clear-btn">Clear All Filters</button>
-                        </div>
-                        <div class="filter-info">
-                            <span id="filter-status">Showing all practices</span>
-                        </div>
-                    </div>                    <div class="table-wrapper">
-                        <table class="data-table" id="practices-table">
-                            <thead>
-                                <tr>
-                                    <th data-column="name">
-                                        Practice
-                                        <div class="column-filter">
-                                            <input type="text" placeholder="Filter..." class="column-search">
-                                        </div>
-                                    </th>                                    <th data-column="primaryArea">
-                                        Primary Area
-                                        <div class="column-filter">
-                                            <div class="multi-select-container">
-                                                <div class="multi-select-header" onclick="toggleMultiSelect('primaryArea')">
-                                                    <span class="selected-text">All</span>
-                                                    <span class="dropdown-arrow">▼</span>
-                                                </div>
-                                                <div class="multi-select-options" id="primaryArea-options">
-                                                    <!-- Options will be populated by JavaScript -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th data-column="secondaryArea">
-                                        Secondary Area
-                                        <div class="column-filter">
-                                            <div class="multi-select-container">
-                                                <div class="multi-select-header" onclick="toggleMultiSelect('secondaryArea')">
-                                                    <span class="selected-text">All</span>
-                                                    <span class="dropdown-arrow">▼</span>
-                                                </div>
-                                                <div class="multi-select-options" id="secondaryArea-options">
-                                                    <!-- Options will be populated by JavaScript -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </th><th data-column="description">
-                                        Description
-                                        <div class="column-filter">
-                                            <input type="text" placeholder="Filter..." class="column-search">
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="delivery-practices-table-body">
-                                <!-- Practices will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination Controls -->
-                    <div class="pagination-controls">
-                        <div class="pagination-info">
-                            <span id="pagination-info">Showing 1-15 of 0 practices</span>
-                        </div>
-                        <div class="pagination-buttons">
-                            <button id="first-page" class="pagination-btn" disabled>First</button>
-                            <button id="prev-page" class="pagination-btn" disabled>Previous</button>
-                            <span id="current-page-info">Page 1 of 1</span>
-                            <button id="next-page" class="pagination-btn" disabled>Next</button>
-                            <button id="last-page" class="pagination-btn" disabled>Last</button>
-                        </div>
-                        <div class="page-size-selector">
-                            <label>Show: 
-                                <select id="page-size-select">
-                                    <option value="15" selected>15</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                                per page
-                            </label>
-                        </div>
-                    </div>
+                    <!-- R8.3: Use container delivery-practices-container -->
+                    <div id="delivery-practices-container"></div>
                 </div>
             </div>
         </div>
-    </div>      <script src="../Data/delivery-practices.js"></script>
-      <script src="../Data/cynefin-data.js"></script>
-      <script src="../JavaScript/assessment-utils.js"></script>
-      <script src="../JavaScript/cynefin-chart-component.js"></script>
-      <script src="../JavaScript/stacey-chart-component.js"></script>
-      <script src="../JavaScript/stacey-summary-component.js"></script>
-      <script>
+    </div>      <!-- Make sure this order is correct -->
+<script src="../Data/delivery-practices.js"></script>
+<script src="../JavaScript/delivery-practices-table.js"></script>
+<script src="../Data/cynefin-data.js"></script>
+<script src="../JavaScript/assessment-utils.js"></script>
+<script src="../JavaScript/cynefin-chart-component.js"></script>
+<script src="../JavaScript/stacey-chart-component.js"></script>
+<script src="../JavaScript/stacey-summary-component.js"></script>
+<script>
         // Initialize chart variables
         // let staceyChart; // Will be managed by StaceyChartComponent
         let resultsDescriptionsData = null; // To store fetched JSON data        let staceyDataForDB = null; // To store Stacey data for DB save
@@ -352,7 +280,29 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 resultsDescriptionsData = await response.json();
-                loadData(); // Now that descriptions are loaded, proceed to load assessment data
+
+                // Check if assessment data exists in localStorage
+                const staceyData = localStorage.getItem('staceyMatrixResults');
+                const cynefinData = localStorage.getItem('cynefinFrameworkAssessmentResults_v3');
+
+                if (staceyData && cynefinData) {
+                    loadData(); // Now that descriptions and assessment data are loaded, proceed
+                    
+                    // Ensure the summary component displays the correct Stacey area after all initialization
+                    setTimeout(() => {
+                        const parsedStaceyData = JSON.parse(staceyData);
+                        console.log('🔄 Final update: Ensuring Stacey summary shows correct area:', parsedStaceyData.area);
+                        updateStaceySummaryComponent({
+                            area: parsedStaceyData.area,
+                            productScore: parsedStaceyData.product?.average || 0,
+                            technicalScore: parsedStaceyData.technical?.average || 0,
+                            teamScore: parsedStaceyData.team?.average || 0
+                        });
+                    }, 500);
+                } else {
+                    console.warn("Assessment data not found in localStorage. Delaying loadData().");
+                    // Optionally display a message to the user
+                }
             } catch (error) {
                 console.error("Could not load results descriptions:", error);
                 // Optionally display an error to the user
@@ -361,65 +311,44 @@
 
         // Load data from local storage and update displays
         function loadData() {
-            const staceyDataFromStorage = assessmentUtils.loadFromLocalStorage('staceyMatrixResults');
-            let staceyArea = null;
-            let staceyComponentInstance = null;
-
-            // Prepare options for StaceyChartComponent
-            const staceyChartOptions = {
-                parentElementId: 'stacey-chart-component-summary-placeholder', // New parent
-                // canvasId: 'staceyChart', // Component can generate its own canvas ID or use this
+            console.log('🔄 Loading Stacey data for summary...');
+            
+            // Use the exact same approach as the Stacey page, but in non-interactive mode
+            const staceyComponent = new StaceyChartComponent({
+                parentElementId: 'stacey-chart-component-summary-placeholder',
                 productScoreDisplayId: 'product-score',
                 technicalScoreDisplayId: 'technical-score',
-                teamScoreDisplayId: 'team-score', // This ID exists in summary.html
-                areaDisplayId: 'area-result',
-                areaNameDisplayId: 'area-name',
-                // The above IDs for scores/area are for elements *outside* the chart component's direct rendering,
-                // in the summary cards. The component updates them.
-                isInteractive: false // Display only
-            };
+                teamScoreDisplayId: 'team-score',
+                areaDisplayId: null, // Don't let chart component update area - summary component handles it
+                areaNameDisplayId: null, // Don't let chart component update area - summary component handles it
+                localStorageKey: 'staceyMatrixResults',
+                questionsData: null, // Not needed for non-interactive mode
+                isInteractive: false, // Display mode only
+                redirectUrlOnSave: null // No redirect needed
+            });
+            
+            console.log('✅ Stacey chart component initialized in summary mode');
 
-            if (staceyDataFromStorage) {
-                // Apply team score adjustment if needed
-                let productScore = staceyDataFromStorage.product.average;
-                let technicalScore = staceyDataFromStorage.technical.average;
-                
-                if (staceyDataFromStorage.team.average > 5) {
-                    const adjustment = Math.floor(staceyDataFromStorage.team.average - 5) * 0.5;
-                    productScore += adjustment;
-                    technicalScore += adjustment;
-                    productScore = Math.min(productScore, 10);
-                    technicalScore = Math.min(technicalScore, 10);
-                }
+            // Load Stacey data to get the area for updateDomainInfo
+            const staceyData = assessmentUtils.loadFromLocalStorage('staceyMatrixResults');
+            const staceyArea = staceyData ? staceyData.area : 'Simple';
+            
+            console.log('📊 Loaded Stacey area:', staceyArea);
 
-                staceyArea = staceyDataFromStorage.area;
-
-                staceyChartOptions.initialData = {
-                    productScore: productScore,
-                    technicalScore: technicalScore,
-                    teamScore: staceyDataFromStorage.team.average,
-                    area: staceyArea
-                    // Store relevant data for DB save
-                };
-                staceyDataForDB = staceyChartOptions.initialData; // Save for DB
-            }
-
-            // Instantiate StaceyChartComponent
-            staceyComponentInstance = new StaceyChartComponent(staceyChartOptions);
-
-            // Load Cynefin Data (Key for Cynefin in Cynefin.html is 'cynefinFrameworkAssessmentResults_v3')
-            // The key used in summary.html's original loadData was 'cynefinAssessmentResults'
-            // Let's assume the key from Cynefin.html is the correct one to use for loading.
             const cynefinData = assessmentUtils.loadFromLocalStorage('cynefinFrameworkAssessmentResults_v3');
             if (cynefinData) {
-                // The structure of cynefinData from Cynefin.html is different:
-                // { allQuestionScores, domain, averageDecisionScore, averageCauseEffectScore, timestamp }
-                document.getElementById('decision-score').textContent = cynefinData.averageDecisionScore.toFixed(1);
-                document.getElementById('cause-effect-score').textContent = cynefinData.averageCauseEffectScore.toFixed(1);
-                document.getElementById('current-domain').textContent = cynefinData.domain;
+                // Add checks to ensure data exists before accessing properties
+                const decisionScore = cynefinData.averageDecisionScore ? cynefinData.averageDecisionScore.toFixed(1) : '0.0';
+                const causeEffectScore = cynefinData.averageCauseEffectScore ? cynefinData.averageCauseEffectScore.toFixed(1) : '0.0';
+                const currentDomain = cynefinData.domain ? cynefinData.domain : 'Unknown';
+
+                document.getElementById('decision-score').textContent = decisionScore;
+                document.getElementById('cause-effect-score').textContent = causeEffectScore;
+                document.getElementById('current-domain').textContent = currentDomain;
                 cynefinDataForDB = cynefinData; // Save for DB
-                
-                highlightCurrentDomain(cynefinData.domain);                updateDomainInfo(cynefinData.domain, staceyArea);
+
+                highlightCurrentDomain(currentDomain);
+                updateDomainInfo(currentDomain, staceyArea);
             }
         }
 
@@ -437,7 +366,6 @@
             const senseMakingDescriptionEl = document.getElementById('sense-making-description');
             const domainPracticesEl = document.getElementById('domain-practices-list');
             const deliveryPracticesSectionEl = document.getElementById('delivery-practices-section');
-            const deliveryPracticesTableBodyEl = document.getElementById('delivery-practices-table-body');
             const domainImageContainer = document.getElementById('domain-image-container');
             const domainImageEl = document.getElementById('domain-image');
             
@@ -446,7 +374,6 @@
             domainOverviewEl.textContent = '';
             senseMakingDescriptionEl.textContent = '';
             domainPracticesEl.innerHTML = '';
-            deliveryPracticesTableBodyEl.innerHTML = ''; 
             deliveryPracticesSectionEl.style.display = 'none';
             domainImageContainer.style.display = 'none';
             domainImageEl.src = '';
@@ -498,8 +425,8 @@
                     });
                 }
                 
-                // Show the delivery practices section and populate filters/table
-                initializeDataTable(cynefinDomain, staceyArea);
+                // Initialize Tabulator table instead of vanilla table
+                initializeTabulatorTable(cynefinDomain, staceyArea);
                 deliveryPracticesSectionEl.style.display = 'block';
                 infoElement.style.display = 'block';
             } else {
@@ -508,354 +435,16 @@
             }
         }
 
-        // Initialize the enhanced data table
-        function initializeDataTable(cynefinDomain, staceyArea) {
-            let allPractices = deliveryPractices;
-            let filteredPractices = [...allPractices];
-            
-            // Pagination variables
-            let currentPage = 1;
-            let pageSize = 15;
-            
-            // Get domain-specific recommendations
-            if (cynefinDomain) {
-                const domainPriority = {
-                    'clear': ['Predictive', 'Hybrid'],
-                    'complicated': ['Hybrid', 'Predictive'],
-                    'complex': ['Agile', 'Hybrid'],
-                    'chaotic': ['Agile'],
-                    'disorder': ['Hybrid']
-                };
-
-                const priorities = domainPriority[cynefinDomain.toLowerCase()] || ['Hybrid'];
-                const recommendedPractices = allPractices.filter(practice => 
-                    priorities.includes(practice.primaryArea) || 
-                    (practice.secondaryArea && priorities.includes(practice.secondaryArea))
-                );
-                
-                // Show recommended practices first, then others
-                allPractices = [
-                    ...recommendedPractices,
-                    ...allPractices.filter(p => !recommendedPractices.includes(p))
-                ];
-                filteredPractices = [...allPractices];
-            }
-
-            // Initialize column filters
-            initializeColumnFilters();
-            
-            // Set up event listeners
-            setupFilterEventListeners();
-            setupPaginationEventListeners();
-            
-            // Initial table render
-            renderTable(filteredPractices);
-            updateFilterStatus(filteredPractices.length, allPractices.length);
-            updatePaginationInfo();            function initializeColumnFilters() {
-                // Populate multi-select filters with unique values
-                const primaryAreas = [...new Set(allPractices.map(p => p.primaryArea))].sort();
-                const secondaryAreas = [...new Set(allPractices.filter(p => p.secondaryArea).map(p => p.secondaryArea))].sort();
-                
-                // Initialize multi-select for primary areas
-                initializeMultiSelect('primaryArea', primaryAreas);
-                
-                // Initialize multi-select for secondary areas
-                initializeMultiSelect('secondaryArea', secondaryAreas);
-            }
-
-            function initializeMultiSelect(columnName, options) {
-                const container = document.getElementById(`${columnName}-options`);
-                container.innerHTML = '';
-                
-                // Add "Select All" option
-                const selectAllDiv = document.createElement('div');
-                selectAllDiv.className = 'multi-select-option';
-                selectAllDiv.innerHTML = `
-                    <input type="checkbox" id="${columnName}-select-all" onchange="toggleSelectAll('${columnName}')">
-                    <label for="${columnName}-select-all"><strong>Select All</strong></label>
-                `;
-                container.appendChild(selectAllDiv);
-                
-                // Add individual options
-                options.forEach(option => {
-                    const optionDiv = document.createElement('div');
-                    optionDiv.className = 'multi-select-option';
-                    optionDiv.innerHTML = `
-                        <input type="checkbox" id="${columnName}-${option}" value="${option}" onchange="updateMultiSelectDisplay('${columnName}')">
-                        <label for="${columnName}-${option}">${option}</label>
-                    `;
-                    container.appendChild(optionDiv);
-                });
-                
-                // Add action buttons
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'multi-select-actions';                actionsDiv.innerHTML = `
-                    <button class="multi-select-btn" onclick="clearSelection('${columnName}')">Clear</button>
-                    <button class="multi-select-btn" onclick="closeMultiSelect('${columnName}')">Done</button>
-                `;
-                container.appendChild(actionsDiv);
-                
-                // Set initial state based on pre-filtering requirements
-                setDefaultFilters(columnName);
-            }
-            
-            function setDefaultFilters(columnName) {
-                // Clear all selections first
-                const selectAllCheckbox = document.getElementById(`${columnName}-select-all`);
-                const optionCheckboxes = document.querySelectorAll(`#${columnName}-options input[type="checkbox"]:not(#${columnName}-select-all)`);
-                
-                selectAllCheckbox.checked = false;
-                optionCheckboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-                
-                // Set specific defaults for pre-filtering
-                if (columnName === 'primaryArea') {
-                    // Pre-filter Primary Area: Agile
-                    const agileCheckbox = document.getElementById('primaryArea-Agile');
-                    if (agileCheckbox) {
-                        agileCheckbox.checked = true;
-                    }
-                } else if (columnName === 'secondaryArea') {
-                    // Pre-filter Secondary Area: Hybrid
-                    const hybridCheckbox = document.getElementById('secondaryArea-Hybrid');
-                    if (hybridCheckbox) {
-                        hybridCheckbox.checked = true;
-                    }
-                }
-                
-                updateMultiSelectDisplay(columnName);
-            }function setupFilterEventListeners() {
-                // Global search
-                const globalSearch = document.getElementById('global-search');
-                globalSearch.addEventListener('input', applyFilters);
-                
-                // Clear filters button
-                const clearBtn = document.getElementById('clear-filters');
-                clearBtn.addEventListener('click', clearAllFilters);
-                
-                // Column text filters
-                const columnSearches = document.querySelectorAll('.column-search');
-                columnSearches.forEach(input => {
-                    input.addEventListener('input', applyFilters);
-                });
-                
-                // Close multi-selects when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.multi-select-container')) {
-                        document.querySelectorAll('.multi-select-options.show').forEach(options => {
-                            options.classList.remove('show');
-                            options.closest('.multi-select-container').querySelector('.multi-select-header').classList.remove('active');
-                        });
-                    }
-                });
-            }            function applyFilters() {
-                const globalSearchTerm = document.getElementById('global-search').value.toLowerCase();
-                
-                // Get column-specific filters
-                const columnFilters = {};
-                document.querySelectorAll('[data-column]').forEach(th => {
-                    const column = th.dataset.column;
-                    const searchInput = th.querySelector('.column-search');
-                    
-                    if (searchInput) {
-                        columnFilters[column] = searchInput.value.toLowerCase();
-                    } else if (column === 'primaryArea' || column === 'secondaryArea') {
-                        // Get selected values from multi-select
-                        const selectedValues = getSelectedMultiSelectValues(column);
-                        if (selectedValues.length > 0) {
-                            columnFilters[column] = selectedValues;
-                        }
-                    }
-                });
-                
-                // Apply filters
-                filteredPractices = allPractices.filter(practice => {
-                    // Global search across all text fields
-                    if (globalSearchTerm) {
-                        const searchableText = [
-                            practice.name,
-                            practice.primaryArea,
-                            practice.secondaryArea || '',
-                            practice.description
-                        ].join(' ').toLowerCase();
-                        
-                        if (!searchableText.includes(globalSearchTerm)) {
-                            return false;
-                        }
-                    }
-                    
-                    // Column-specific filters
-                    for (const [column, filterValue] of Object.entries(columnFilters)) {
-                        if (filterValue) {
-                            const practiceValue = practice[column];
-                            if (!practiceValue) {
-                                return false;
-                            }
-                            
-                            if (Array.isArray(filterValue)) {
-                                // Multi-select filter - check if practice value is in selected values
-                                if (!filterValue.includes(practiceValue)) {
-                                    return false;
-                                }
-                            } else if (typeof filterValue === 'string' && filterValue.length > 0) {
-                                // Text filter - partial match
-                                if (!practiceValue.toLowerCase().includes(filterValue)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    
-                    return true;
-                });
-                
-                currentPage = 1; // Reset to first page when filters change
-                renderTable(filteredPractices);
-                updateFilterStatus(filteredPractices.length, allPractices.length);                updatePaginationInfo();
-            }
-
-            // Expose applyFilters globally for multi-select callbacks
-            window.currentApplyFilters = applyFilters;
-
-            function clearAllFilters() {
-                // Clear global search
-                document.getElementById('global-search').value = '';
-                
-                // Clear column text filters
-                document.querySelectorAll('.column-search').forEach(input => {
-                    input.value = '';
-                });
-                
-                // Clear multi-select filters
-                clearSelection('primaryArea');
-                clearSelection('secondaryArea');
-                
-                // Reset filtered data and re-render
-                filteredPractices = [...allPractices];
-                currentPage = 1; // Reset to first page when clearing filters
-                renderTable(filteredPractices);
-                updateFilterStatus(filteredPractices.length, allPractices.length);
-                updatePaginationInfo();
-            }function renderTable(practices) {
-                const tableBody = document.getElementById('delivery-practices-table-body');
-                tableBody.innerHTML = '';
-                
-                // Calculate pagination
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = startIndex + pageSize;
-                const paginatedPractices = practices.slice(startIndex, endIndex);
-                
-                paginatedPractices.forEach((practice, index) => {
-                    const tr = document.createElement('tr');
-                    
-                    // Add recommended class for domain-specific recommendations
-                    const originalIndex = startIndex + index;
-                    if (cynefinDomain && originalIndex < getRecommendedCount(cynefinDomain)) {
-                        tr.classList.add('recommended-practice');
-                    }
-                      const cells = [
-                        practice.name,
-                        practice.primaryArea,
-                        practice.secondaryArea || '',
-                        practice.description
-                    ];
-                    
-                    cells.forEach(cellText => {
-                        const td = document.createElement('td');
-                        td.textContent = cellText;
-                        tr.appendChild(td);
-                    });
-                    
-                    tableBody.appendChild(tr);
-                });
-            }
-
-            function updateFilterStatus(filtered, total) {
-                const statusEl = document.getElementById('filter-status');
-                if (filtered === total) {
-                    statusEl.textContent = `Showing all ${total} practices`;
-                } else {
-                    statusEl.textContent = `Showing ${filtered} of ${total} practices`;                }
-            }
-
-            function setupPaginationEventListeners() {
-                // Page size selector
-                const pageSizeSelect = document.getElementById('page-size-select');
-                pageSizeSelect.addEventListener('change', (e) => {
-                    pageSize = parseInt(e.target.value);
-                    currentPage = 1; // Reset to first page
-                    renderTable(filteredPractices);
-                    updatePaginationInfo();
-                });
-
-                // Pagination buttons
-                document.getElementById('first-page').addEventListener('click', () => {
-                    currentPage = 1;
-                    renderTable(filteredPractices);
-                    updatePaginationInfo();
-                });
-
-                document.getElementById('prev-page').addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        renderTable(filteredPractices);
-                        updatePaginationInfo();
-                    }
-                });
-
-                document.getElementById('next-page').addEventListener('click', () => {
-                    const totalPages = Math.ceil(filteredPractices.length / pageSize);
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        renderTable(filteredPractices);
-                        updatePaginationInfo();
-                    }
-                });
-
-                document.getElementById('last-page').addEventListener('click', () => {
-                    const totalPages = Math.ceil(filteredPractices.length / pageSize);
-                    currentPage = totalPages;
-                    renderTable(filteredPractices);
-                    updatePaginationInfo();
-                });
-            }
-
-            function updatePaginationInfo() {
-                const totalRecords = filteredPractices.length;
-                const totalPages = Math.ceil(totalRecords / pageSize);
-                const startRecord = totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-                const endRecord = Math.min(currentPage * pageSize, totalRecords);
-
-                // Update pagination info
-                document.getElementById('pagination-info').textContent = 
-                    `Showing ${startRecord}-${endRecord} of ${totalRecords} practices`;
-                
-                // Update current page info
-                document.getElementById('current-page-info').textContent = 
-                    `Page ${currentPage} of ${totalPages}`;
-
-                // Update button states
-                document.getElementById('first-page').disabled = currentPage === 1;
-                document.getElementById('prev-page').disabled = currentPage === 1;
-                document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;                document.getElementById('last-page').disabled = currentPage === totalPages || totalPages === 0;
-            }
-
-            function getRecommendedCount(domain) {
-                const domainPriority = {
-                    'clear': ['Predictive', 'Hybrid'],
-                    'complicated': ['Hybrid', 'Predictive'],
-                    'complex': ['Agile', 'Hybrid'],
-                    'chaotic': ['Agile'],
-                    'disorder': ['Hybrid']
-                };
-                  const priorities = domainPriority[domain.toLowerCase()] || ['Hybrid'];
-                return allPractices.filter(practice => 
-                    priorities.includes(practice.primaryArea) || 
-                    (practice.secondaryArea && priorities.includes(practice.secondaryArea))                ).length;
-            }
+        // Replace the entire initializeDataTable function with this:
+        function initializeTabulatorTable(cynefinDomain, staceyArea) {
+            // Initialize the Tabulator table
+            const practicesTable = new DeliveryPracticesTable('delivery-practices-container');
+            practicesTable.init();
         }
-        
+
+        // Remove all the old table functions (initializeColumnFilters, setupFilterEventListeners, etc.)
+        // They are now handled by the DeliveryPracticesTable class
+
         // Multi-select utility functions (global scope)
         function toggleMultiSelect(columnName) {
             const optionsContainer = document.getElementById(`${columnName}-options`);
@@ -1029,6 +618,21 @@
                 });
             });
         }
+
+        // Update the initialization
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, looking for container...'); // Add this
+    const container = document.getElementById('delivery-practices-container');
+    console.log('Container found:', container); // Add this
+    
+    if (container) {
+        console.log('Initializing table...'); // Add this
+        const practicesTable = new DeliveryPracticesTable('delivery-practices-container');
+        practicesTable.init();
+    } else {
+        console.error('delivery-practices-container not found!'); // Add this
+    }
+});
     </script>
     <script src="../JavaScript/navigation-component.js"></script>
     <script>

@@ -24,11 +24,28 @@ class StaceyChartComponent {
         // Or, if summary cards are also part of this component, they'd be rendered here.
         // For now, we assume summary cards are separate but might use these IDs.
         // If not, these IDs can be internal to the component.
-        this.productScoreDisplayElement = document.getElementById(this.options.productScoreDisplayId || 'stacey-product-score');
-        this.technicalScoreDisplayElement = document.getElementById(this.options.technicalScoreDisplayId || 'stacey-technical-score');
-        this.teamScoreDisplayElement = document.getElementById(this.options.teamScoreDisplayId || 'stacey-team-score');
-        this.areaNameDisplayElement = document.getElementById(this.options.areaNameDisplayId || 'stacey-area-name');
-        this.areaResultDisplayElement = document.getElementById(this.options.areaDisplayId || 'stacey-area-result');
+        // If the IDs are explicitly set to null, don't try to target external elements
+        console.log('🔧 Chart component options for element IDs:', {
+            productScoreDisplayId: this.options.productScoreDisplayId,
+            technicalScoreDisplayId: this.options.technicalScoreDisplayId,
+            teamScoreDisplayId: this.options.teamScoreDisplayId,
+            areaNameDisplayId: this.options.areaNameDisplayId,
+            areaDisplayId: this.options.areaDisplayId
+        });
+        
+        this.productScoreDisplayElement = this.options.productScoreDisplayId ? document.getElementById(this.options.productScoreDisplayId) : null;
+        this.technicalScoreDisplayElement = this.options.technicalScoreDisplayId ? document.getElementById(this.options.technicalScoreDisplayId) : null;
+        this.teamScoreDisplayElement = this.options.teamScoreDisplayId ? document.getElementById(this.options.teamScoreDisplayId) : null;
+        this.areaNameDisplayElement = this.options.areaNameDisplayId ? document.getElementById(this.options.areaNameDisplayId) : null;
+        this.areaResultDisplayElement = this.options.areaDisplayId ? document.getElementById(this.options.areaDisplayId) : null;
+        
+        console.log('🔧 Chart component resolved elements:', {
+            productScoreDisplayElement: !!this.productScoreDisplayElement,
+            technicalScoreDisplayElement: !!this.technicalScoreDisplayElement,
+            teamScoreDisplayElement: !!this.teamScoreDisplayElement,
+            areaNameDisplayElement: !!this.areaNameDisplayElement,
+            areaResultDisplayElement: !!this.areaResultDisplayElement
+        });
 
         // Check if elements were found/created, especially if IDs were passed vs generated
         if (!this.productScoreDisplayElement || !this.technicalScoreDisplayElement || !this.teamScoreDisplayElement || !this.areaNameDisplayElement || !this.areaResultDisplayElement) {
@@ -96,10 +113,33 @@ class StaceyChartComponent {
 
     initDisplay() {
         this.initChart();
+        
+        // If we have initialData, use it
         if (this.options.initialData) {
             this.updateChartWithExternalData(this.options.initialData);
-        } else {
-             this.updateChartWithExternalData({ technicalScore: 0, productScore: 0, teamScore: 0, area: "Simple" });
+        } 
+        // If we have a localStorageKey, load saved data (for summary page)
+        else if (this.localStorageKey) {
+            console.log('📊 Loading saved data for display mode...');
+            const savedData = assessmentUtils.loadFromLocalStorage(this.localStorageKey);
+            if (savedData) {
+                // Use the saved data directly (it's already adjusted)
+                const displayData = {
+                    productScore: savedData.product?.average || 0,
+                    technicalScore: savedData.technical?.average || 0,
+                    teamScore: savedData.team?.average || 0,
+                    area: savedData.area || "Simple"
+                };
+                console.log('📊 Loaded saved data for display:', displayData);
+                this.updateChartWithExternalData(displayData);
+            } else {
+                console.log('📊 No saved data found, using defaults');
+                this.updateChartWithExternalData({ technicalScore: 0, productScore: 0, teamScore: 0, area: "Simple" });
+            }
+        } 
+        // Fallback to defaults
+        else {
+            this.updateChartWithExternalData({ technicalScore: 0, productScore: 0, teamScore: 0, area: "Simple" });
         }
     }
 
@@ -222,6 +262,8 @@ class StaceyChartComponent {
     }
     
     updateChartWithExternalData({ technicalScore, productScore, teamScore, area }) {
+        console.log('📊 Chart updateChartWithExternalData called with:', { technicalScore, productScore, teamScore, area });
+        
         if (this.productScoreDisplayElement) this.productScoreDisplayElement.textContent = productScore.toFixed(1);
         if (this.technicalScoreDisplayElement) this.technicalScoreDisplayElement.textContent = technicalScore.toFixed(1);
         if (this.teamScoreDisplayElement) this.teamScoreDisplayElement.textContent = teamScore.toFixed(1);
@@ -231,8 +273,27 @@ class StaceyChartComponent {
         this.staceyChart.options.plugins.annotation.annotations.guidelineY.value = technicalScore;
         this.staceyChart.update();
 
-        if (this.areaNameDisplayElement) this.areaNameDisplayElement.textContent = area;
-        if (this.areaResultDisplayElement) this.areaResultDisplayElement.className = 'area-display ' + area.toLowerCase() + '-area';
+        // For display mode (summary page), ALWAYS use the provided area
+        // For interactive mode, calculate area dynamically
+        const finalArea = this.options.isInteractive ? this.determineComplexityArea(technicalScore, productScore) : area;
+        
+        console.log(`📊 Chart component area logic: mode=${this.options.isInteractive ? 'interactive' : 'display'}, provided="${area}", calculated="${this.determineComplexityArea(technicalScore, productScore)}", final="${finalArea}"`);
+        
+        if (this.areaNameDisplayElement) {
+            console.log(`📊 Chart updating area-name element: "${this.areaNameDisplayElement.textContent}" → "${finalArea}"`);
+            this.areaNameDisplayElement.textContent = finalArea;
+        } else {
+            console.log('📊 Chart: No area-name element to update (good for summary page)');
+        }
+        
+        if (this.areaResultDisplayElement) {
+            console.log(`📊 Chart updating area-result element classes`);
+            this.areaResultDisplayElement.className = 'area-display ' + finalArea.toLowerCase() + '-area';
+        } else {
+            console.log('📊 Chart: No area-result element to update (good for summary page)');
+        }
+        
+        console.log(`📊 Chart component updated: Area="${finalArea}", Product=${productScore}, Technical=${technicalScore}, Team=${teamScore}`);
     }
 
     determineComplexityArea(technicalScore, productScore) {
@@ -310,5 +371,9 @@ class StaceyChartComponent {
             if (s) { s.value = scores.m; assessmentUtils.updateSliderValueDisplay(s); }
         });
         this.updateScores();
+        
+        // Auto-save the test results to localStorage
+        this.saveResults(false); // false = don't redirect, just save
+        console.log(`✅ Stacey test answers for "${type}" saved to localStorage`);
     }
 }

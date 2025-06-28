@@ -45,6 +45,45 @@ app.get(['/summary', '/summary.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'View', 'summary.html'));
 });
 
+// Route for the Decision Making Table test page
+app.get(['/test', '/test.html', '/test-decision-matrix', '/test-decision-matrix.html'], (req, res) => {
+    console.log('Test page requested:', req.url);
+    res.sendFile(path.join(__dirname, 'test-decision-matrix-complete.html'));
+});
+
+// Route for the debug table test page
+app.get(['/debug', '/debug.html', '/debug-table'], (req, res) => {
+    console.log('Debug page requested:', req.url);
+    res.sendFile(path.join(__dirname, 'debug-table-test.html'));
+});
+
+// Route for the quick table test page
+app.get(['/quick', '/quick.html', '/quick-test'], (req, res) => {
+    console.log('Quick test page requested:', req.url);
+    res.sendFile(path.join(__dirname, 'quick-table-test.html'));
+});
+
+// Route for simple table test
+app.get(['/simple', '/simple.html', '/simple-test'], (req, res) => {
+    console.log('Simple test page requested:', req.url);
+    res.sendFile(path.join(__dirname, 'simple-table-test.html'));
+});
+
+// Route for the deep debug page
+app.get(['/deep-debug', '/deep-debug.html'], (req, res) => {
+    console.log('Deep debug page requested:', req.url);
+    res.sendFile(path.join(__dirname, 'deep-debug.html'));
+});
+
+// Debug route to check if server is working
+app.get('/debug', (req, res) => {
+    res.json({ 
+        message: 'Server is working',
+        timestamp: new Date().toISOString(),
+        availableRoutes: ['/test', '/test.html', '/test-decision-matrix', '/summary', '/stacey', '/cynefin', '/']
+    });
+});
+
 // Additional request logging for debugging (after routes)
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
