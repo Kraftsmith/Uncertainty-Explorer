@@ -162,9 +162,11 @@
     <div class="main-content-with-nav">
         <div class="section">
             <h1 class="section-title">Diagnose Summary</h1>
-              <div class="action-buttons" style="margin-bottom: 20px;">
-                <!-- Export buttons can go here -->
-            </div>
+            <form id="email-summary-form" style="margin-bottom: 20px; display: flex; gap: 8px; align-items: center;">
+                <input type="email" id="summary-email" placeholder="Enter your email" required style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em;">
+                <button type="submit" style="padding: 6px 18px; border-radius: 4px; background: #3498db; color: #fff; border: none; font-size: 1em; cursor: pointer;">Send Summary to Email</button>
+                <span id="email-summary-status" style="margin-left: 12px; font-size: 0.95em;"></span>
+            </form>
 
 
 
@@ -248,15 +250,48 @@
                 </div>
             </div>
         </div>
+        
+        <div class="section" id="roles-section">
+            <h2>Recommended Roles</h2>
+            <div id="roles-container"></div>
+        </div>
     </div>      <!-- Make sure this order is correct -->
 <script src="../Data/delivery-practices.js"></script>
 <script src="../JavaScript/delivery-practices-table.js"></script>
+<script src="../JavaScript/roles-component.js"></script>
 <script src="../Data/cynefin-data.js"></script>
 <script src="../JavaScript/assessment-utils.js"></script>
 <script src="../JavaScript/cynefin-chart-component.js"></script>
 <script src="../JavaScript/stacey-chart-component.js"></script>
 <script src="../JavaScript/stacey-summary-component.js"></script>
 <script>
+    // Email summary form handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('email-summary-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('summary-email').value;
+                const status = document.getElementById('email-summary-status');
+                status.textContent = 'Sending...';
+                try {
+                    const response = await fetch('/api/email-summary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        status.textContent = 'Summary sent! Check your inbox.';
+                    } else {
+                        status.textContent = data.error || 'Failed to send email.';
+                    }
+                } catch (err) {
+                    status.textContent = 'Error sending email.';
+                }
+            });
+        }
+    });
         // Initialize chart variables
         // let staceyChart; // Will be managed by StaceyChartComponent
         let resultsDescriptionsData = null; // To store fetched JSON data        let staceyDataForDB = null; // To store Stacey data for DB save
@@ -271,6 +306,10 @@
             
             loadStaceySummaryComponent('stacey-summary-component-placeholder'); // Load the summary cards
             fetchResultsDescriptions(); // Fetch descriptions first
+
+            // Initialize the RolesComponent
+            const rolesComponent = new RolesComponent('roles-container');
+            rolesComponent.render();
         });
 
         async function fetchResultsDescriptions() {

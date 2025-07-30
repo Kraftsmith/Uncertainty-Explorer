@@ -41,7 +41,7 @@ Product uncertainty and complexity
   2. Slider value, what user selected.   
   3. Initial slider value 0\.
 
-* Product uncertainty and complexity: \[calculated value\] at the end of the section.
+* Product uncertainty and complexity: calculated  value at the end of the section.
 
 * Forumular: average of all answers in the section.
 
@@ -69,14 +69,14 @@ Product uncertainty and complexity
 
 10. How frequently must you refactor for performance/maintainability?
 
-    **Questions interactions**
+**Questions interactions**
 
 * Each question needs to go with   
   1. a slider from 1 to 10\. User can drag the slider to set the value.  
   2. Initial slider value 0\.  
   3. Slider value, what user selected. 
 
-* Technical uncertainty and complexity: \[calculated value\] at the end of the section.
+ * Technical uncertainty and complexity: calculated value - at the end of the section.
 
   1. Forumular: average of all answers in the section.
 
@@ -108,10 +108,10 @@ Product uncertainty and complexity
 
 * Each question needs to go with   
   1. a slider from 1 to 10\. User can drag the slider to set the value  
-  2. Slider value, what user selected.   
+  2. Slider value is  what user selected.   
   3. Initial slider value 0\.
 
-* Team uncertainty and complexity: \[calculated value\] at the end of the section. 
+* Team uncertainty and complexity: calculated value at the end of the section. 
 
   1. Forumular: average of all answers in the section.Assessment Results
 
@@ -381,7 +381,7 @@ The summary box should  show
 
      * Technical (X) \< 2.5 AND Product (Y) \< 2.5Save and Next
 
-   Under the assessment result there should be a **Next** button that saves the results to local storage and navigates the user to the next \[TBD\] page. Save full question-level data \+ timestamps.
+   Under the assessment result there should be a **Next** button that saves the results to local storage and navigates the user to the next cynefin framework assement  page. Save full question-level data \+ timestamps.
 
 ### **Cynefin Framework Domain Assessment Questions**
 
