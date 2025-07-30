@@ -3,6 +3,15 @@ const path = require('path');
 const multer = require('multer');
 const db = require('./db/database');
 const nodemailer = require('nodemailer');
+const { Pool } = require('pg');
+const mysql = require('mysql2');
+const mysqlConnection = mysql.createConnection({
+  host: 'hopper.proxy.rlwy.net',
+  user: 'root',
+  password: 'RlswAWWsshcMxKdoTDrkfSUYfOOiNmTF',
+  database: 'railway',
+  port: 59822
+});
 
 
 const app = express();
@@ -45,6 +54,24 @@ app.post('/api/email-summary', async (req, res) => {
             subject: 'Your Delivery Summary',
             html,
         });
+
+        // Get assessment results from localStorage via request body (if sent from frontend)
+        const staceyResults = req.body.staceyResults || '';
+        const cynefinResults = req.body.cynefinResults || '';
+
+        // Save email and assessment results to MySQL diagnostics table
+        mysqlConnection.query(
+            'INSERT INTO diagnostics (email, stacey, cynefin) VALUES (?, ?, ?)',
+            [email, staceyResults, cynefinResults],
+            (dbErr, results) => {
+                if (dbErr) {
+                    console.error('MySQL diagnostics save error:', dbErr);
+                    // Do not fail the request if saving to DB fails
+                } else {
+                    console.log('Saved email and assessments to diagnostics with id:', results.insertId);
+                }
+            }
+        );
         res.json({ message: 'Summary emailed successfully.' });
     } catch (err) {
         // Provide more detailed error feedback for troubleshooting
