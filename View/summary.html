@@ -265,7 +265,7 @@
 <script src="../JavaScript/stacey-chart-component.js"></script>
 <script src="../JavaScript/stacey-summary-component.js"></script>
 <script>
-    // Email summary form handler
+    // Email summary form handler (send full assessment data)
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('email-summary-form');
         if (form) {
@@ -274,20 +274,68 @@
                 const email = document.getElementById('summary-email').value;
                 const status = document.getElementById('email-summary-status');
                 status.textContent = 'Sending...';
+
+                // Get assessment results from localStorage
+                const staceyResults = localStorage.getItem('staceyMatrixResults');
+                const cynefinResults = localStorage.getItem('cynefinFrameworkAssessmentResults_v3');
+
+                // Helper to get chart image as data URL
+                async function getChartImageDataUrl(chartContainerId) {
+                    const container = document.getElementById(chartContainerId);
+                    if (!container) return null;
+                    const canvas = container.querySelector('canvas');
+                    if (canvas) {
+                        return canvas.toDataURL('image/png');
+                    }
+                    return null;
+                }
+
+                // Get chart images
+                const staceyChartImage = await getChartImageDataUrl('stacey-chart-component-summary-placeholder');
+                const cynefinChartImage = await getChartImageDataUrl('summary-cynefin-chart');
+
+                // Get overview
+                const overview = document.getElementById('domain-overview-text')?.textContent || '';
+
+                // Get delivery framework practices (from Tabulator table)
+                let deliveryFramework = [];
+                if (window.practicesTable && window.practicesTable.table) {
+                    deliveryFramework = window.practicesTable.table.getData().map(row => row.name);
+                }
+
+                // Get recommended roles (from RolesComponent)
+                let recommendedRoles = [];
+                const rolesContainer = document.getElementById('roles-container');
+                if (rolesContainer) {
+                    // Parse roles from the rendered HTML (li elements)
+                    const roleItems = rolesContainer.querySelectorAll('ul li');
+                    recommendedRoles = Array.from(roleItems).map(li => li.textContent.trim());
+                }
+
                 try {
                     const response = await fetch('/api/email-summary', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email })
+                        body: JSON.stringify({
+                            email,
+                            staceyResults,
+                            cynefinResults,
+                            staceyChartImage,
+                            cynefinChartImage,
+                            overview,
+                            deliveryFramework,
+                            recommendedRoles
+                        })
                     });
                     const data = await response.json();
                     if (response.ok) {
-                        status.textContent = 'Summary sent! Check your inbox.';
+                        // Show visually distinct confirmation (green checkmark)
+                        status.innerHTML = '<span style="color: #27ae60; font-weight: bold;">&#10003; Summary sent! Check your inbox.</span>';
                     } else {
-                        status.textContent = data.error || 'Failed to send email.';
+                        status.innerHTML = `<span style="color: #c0392b; font-weight: bold;">${data.error || 'Failed to send email.'}</span>`;
                     }
                 } catch (err) {
-                    status.textContent = 'Error sending email.';
+                    status.innerHTML = '<span style="color: #c0392b; font-weight: bold;">Error sending email.</span>';
                 }
             });
         }

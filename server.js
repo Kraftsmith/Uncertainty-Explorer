@@ -23,46 +23,96 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/api/email-summary', async (req, res) => {
-    const { email } = req.body;
+    const { email, staceyResults, cynefinResults, staceyChartImage, cynefinChartImage, overview, deliveryFramework, recommendedRoles } = req.body;
     if (!email) {
         return res.status(400).json({ error: 'Email is required.' });
     }
     try {
-        // Read the summary.html file
-        const fs = require('fs');
-        const summaryPath = path.join(__dirname, 'View', 'summary.html');
-        let html = fs.readFileSync(summaryPath, 'utf8');
 
-        // Optionally, you can inject dynamic data here if needed
+        // Compose email sections
+        let chartsSection = '';
+        if (staceyChartImage || cynefinChartImage) {
+            chartsSection = '<h3>Assessment Charts</h3>';
+            if (staceyChartImage) {
+                chartsSection += `<div><strong>Stacey Matrix:</strong><br><img src="${staceyChartImage}" alt="Stacey Matrix Chart" style="max-width:400px;"></div>`;
+            }
+            if (cynefinChartImage) {
+                chartsSection += `<div><strong>Cynefin Framework:</strong><br><img src="${cynefinChartImage}" alt="Cynefin Chart" style="max-width:400px;"></div>`;
+            }
+        }
 
-        // Setup nodemailer transporter (move this inside the route for clarity and to avoid undefined error)
-        // IMPORTANT: MailerSend SMTP does NOT use API tokens. You must use SMTP username/password and a verified sender domain.
-        // Update the "from" address to match a verified domain in your MailerSend account.
+        let overviewSection = overview ? `<h3>Assessment Overview</h3><p>${overview}</p>` : '';
+
+        let deliverySection = '';
+        if (deliveryFramework && Array.isArray(deliveryFramework)) {
+            deliverySection = `<h3>Delivery Framework & Practices</h3><ul>${deliveryFramework.map(p => `<li>${p}</li>`).join('')}</ul>`;
+        }
+
+        let rolesSection = '';
+        if (recommendedRoles && Array.isArray(recommendedRoles)) {
+            rolesSection = `<h3>Recommended Roles</h3><ul>${recommendedRoles.map(r => `<li>${r}</li>`).join('')}</ul>`;
+        }
+
+        let staceySummary = '';
+        let cynefinSummary = '';
+        try {
+            if (staceyResults) {
+                const stacey = typeof staceyResults === 'string' ? JSON.parse(staceyResults) : staceyResults;
+                staceySummary = `<h3>Stacey Matrix Results</h3><pre>${JSON.stringify(stacey, null, 2)}</pre>`;
+            }
+            if (cynefinResults) {
+                const cynefin = typeof cynefinResults === 'string' ? JSON.parse(cynefinResults) : cynefinResults;
+                cynefinSummary = `<h3>Cynefin Framework Results</h3><pre>${JSON.stringify(cynefin, null, 2)}</pre>`;
+            }
+        } catch (parseErr) {
+            console.error('Error parsing assessment results for email:', parseErr);
+        }
+
+        // Compose final email HTML
+        const html = `
+            ${chartsSection}
+            ${overviewSection}
+            ${staceySummary}
+            ${cynefinSummary}
+            ${deliverySection}
+            ${rolesSection}
+        `;
+
+        // Setup nodemailer transporter
         const transporter = nodemailer.createTransport({
             host: 'smtp.mailersend.net',
             port: 587,
             secure: false, // use STARTTLS, not SSL
             auth: {
-                user: 'MS_T6SkVy@test-zkq340ej8d2gd796.mlsender.net', // Your MailerSend SMTP username
-                pass: 'mssp.Kgf8e1K.vywj2lp5exmg7oqz.jPEIvVb', // Your MailerSend SMTP password
+                user: 'MS_T6SkVy@test-zkq340ej8d2gd796.mlsender.net',
+                pass: 'mssp.Kgf8e1K.vywj2lp5exmg7oqz.jPEIvVb',
             },
         });
 
         await transporter.sendMail({
-            from: 'noreply@test-zkq340ej8d2gd796.mlsender.net', // Use a verified sender domain
+            from: 'noreply@test-zkq340ej8d2gd796.mlsender.net',
             to: email,
             subject: 'Your Delivery Summary',
             html,
         });
 
-        // Get assessment results from localStorage via request body (if sent from frontend)
-        const staceyResults = req.body.staceyResults || '';
-        const cynefinResults = req.body.cynefinResults || '';
-
-        // Save email and assessment results to MySQL diagnostics table
+        // Always store staceyResults and cynefinResults as JSON strings
+        let staceyToSave = '';
+        let cynefinToSave = '';
+        try {
+            staceyToSave = staceyResults ? (typeof staceyResults === 'string' ? staceyResults : JSON.stringify(staceyResults)) : '';
+        } catch (e) {
+            console.error('Failed to stringify staceyResults:', e);
+        }
+        try {
+            cynefinToSave = cynefinResults ? (typeof cynefinResults === 'string' ? cynefinResults : JSON.stringify(cynefinResults)) : '';
+        } catch (e) {
+            console.error('Failed to stringify cynefinResults:', e);
+        }
+        const now = new Date();
         mysqlConnection.query(
-            'INSERT INTO diagnostics (email, stacey, cynefin) VALUES (?, ?, ?)',
-            [email, staceyResults, cynefinResults],
+            'INSERT INTO diagnostics (email, stacey, cynefin, submitted_at) VALUES (?, ?, ?, ?)',
+            [email, staceyToSave, cynefinToSave, now],
             (dbErr, results) => {
                 if (dbErr) {
                     console.error('MySQL diagnostics save error:', dbErr);
